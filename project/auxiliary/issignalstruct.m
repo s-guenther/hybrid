@@ -6,6 +6,7 @@ function truefalse = issignalstruct(signal)
 %
 % Input:
 %   signal      some variable
+%
 % Output:
 %   truefalse   bool
 
