@@ -1,7 +1,5 @@
-path(path, genpath(cd))
-
-signal = struct('fcn', @(t) sin(t), ...
-                'period', 2*pi, ...
-                'amplitude', 1);
-
-results = main(signal)
+function out = hybrid_leaf(varargin)
+% HYBRID_LEAF caller function for main in proj/main.m
+% For help, please refer to 'help main'
+out = main(varargin{:});
+end

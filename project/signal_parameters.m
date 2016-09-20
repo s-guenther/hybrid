@@ -1,4 +1,4 @@
-function [form, crest, rms, arv, amv] = signal_parameters(signal)
+function parameters = signal_parameters(signal)
 % SIGNAL_PARAMETERS calculates the most common signal characteristics
 %
 % Calculates Form Factor, Crest Factor, Root Mean Square, Average Rectified
@@ -7,17 +7,20 @@ function [form, crest, rms, arv, amv] = signal_parameters(signal)
 % Input:
 %   signal      struct, see issignalstruct
 % Output:
-%   form
-%   crest
-%   rms
-%   arv
-%   amv
+%   parameters  [5x1]
+%       form
+%       crest
+%       rms
+%       arv
+%       amv
 
 rms = root_mean_square(signal);
 arv = average_rectified_value(signal);
 crest = signal.amplitude/rms;
 form = rms/arv;
 amv = average_mean_value(signal);
+
+parameters = [form, crest, rms, arv, amv];
 
 end
 

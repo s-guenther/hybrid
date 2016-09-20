@@ -1,4 +1,4 @@
-function out = main(signal)
+function out = main(signal, calc_max_step, calc_max_tol, cut_off_vector)
 % MAIN Gather main functionality of hybrid leaf tool
 %
 % Calculates energy and power for hybrid storage systems containing a base
@@ -10,8 +10,10 @@ function out = main(signal)
 %
 % Output:
 %   out         struct
-%       .e_single   energy of single storage needed for given signal
-%       .p_single   power of single storage needed for given signal
+%       .single         .energy, .power of single storage (minimum)
+%       .hybrid_table   [cut_off | base.energy | peak.energy | ...
+%                        base.power | peak.power]
+%       .parameter      [form, crest, rms, arv, amv]
 %
 % Theory involves: cutting signal at specific value, calculating separate
 % storages for this, no inter storage power flow (transloading). Only valid
@@ -19,39 +21,45 @@ function out = main(signal)
 
 assert(issignalstruct(signal), 'Invalid input - no signal struct')
 
+if nargin < 2
+    calc_max_step = 1e-2;
+end
+if nargin < 3
+    calc_max_tol = 1e-3;
+end
+if nargin < 4
+    cut_off_fcn = @(x) x - 0.12*sin(2*pi*x);
+    cut_off_vector = cut_off_fcn([0:0.1:1]');
+end
+
+
 % Calculate single storage properties
 [ssingle.energy, ssingle.power] = calc_single_storage(signal);
 
-% Calculate e/p for hybrid storage/multiple storages
-cut_off_vector = linspace(0, 1, 1e1 + 1)';
+
 % Header of hybrid_table (preallocated two lines below):
 % cut_off | base.energy | peak.energy | base.power | peak.power
 hybrid_table = [cut_off_vector, zeros(length(cut_off_vector), 4)];
 for ii = 1:length(cut_off_vector)
     cut_off = cut_off_vector(ii);
-    [base, peak] = calc_hybrid_storage(signal, cut_off);
+    [base, peak] = calc_hybrid_storage(signal, cut_off, calc_max_step);
     hybrid_table(ii,:) = [cut_off, ...
                           base.energy, peak.energy, ...
                           base.power, peak.power];
     hybrid.energy = base.energy + peak.energy;
     hybrid.power = base.power + peak.power;
-    assert(abs((hybrid.energy - ssingle.energy)/ssingle.energy) < 1e-1, ...
-               'Hybrid Energy mismatches Single Storage Energy')
-    assert(abs((hybrid.power - ssingle.power)/ssingle.power) < 1e-1, ...
-               'Hybrid power mismatches Single Storage power')
+    e_tol_achieved = abs((hybrid.energy - ssingle.energy)/ssingle.energy);
+    p_tol_achieved = abs((hybrid.power - ssingle.power)/ssingle.power);
+    assert(e_tol_achieved < calc_max_tol, ...
+           'Hybrid Energy mismatches Single Storage Energy')
+    assert(p_tol_achieved < calc_max_tol, ...
+           'Hybrid power mismatches Single Storage power')
 end
-
-hfig = randi(1e8, 1);
-figure(hfig)
-hold on, grid on
-plot(hybrid_table(:,2), hybrid_table(:,4), 'g')
-plot(hybrid_table(:,3), hybrid_table(:,5), 'r')
-hold off, axis tight
 
 
 % Gather output
 out.single = ssingle;
 out.hybrid_table = hybrid_table;
-out.hfig = hfig;
+out.parameter = signal_parameters(signal);
 
 end%fcn
