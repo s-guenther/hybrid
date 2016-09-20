@@ -25,7 +25,7 @@ if nargin < 2
     calc_max_step = 1e-2;
 end
 if nargin < 3
-    calc_max_tol = 1e-3;
+    calc_max_tol = 1e-2;
 end
 if nargin < 4
     cut_off_fcn = @(x) x - 0.12*sin(2*pi*x);

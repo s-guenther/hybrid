@@ -42,10 +42,11 @@ res_tri = hybrid_leaf(sig_tri);
 res_dist = hybrid_leaf(sig_dist);
 res_high = hybrid_leaf(sig_high);
 
+
 % Plot calculated results
-hfig_square = plot_testcase(res_square, 'Square', sig_square, 101);
-hfig_trapz = plot_testcase(res_trapz , 'Trapezodial Signal ', sig_trapz , 102);
-hfig_sin = plot_testcase(res_sin, 'Sinus', sig_sin, 103);
-hfig_tri = plot_testcase(res_tri, 'Triangle', sig_tri, 104);
-hfig_dist = plot_testcase(res_dist, 'Distorted Triangle', sig_dist, 105);
-hfig_high = plot_testcase(res_high, 'Highly Distorted Triangle', sig_high, 106);
+hfig_square = plot_testcase(sig_square, res_square, 'Square', 101);
+hfig_trapz = plot_testcase(sig_trapz, res_trapz , 'Trapezodial Signal ', 102);
+hfig_sin = plot_testcase(sig_sin, res_sin, 'Sinus', 103);
+hfig_tri = plot_testcase(sig_tri, res_tri, 'Triangle', 104);
+hfig_dist = plot_testcase(sig_dist, res_dist, 'Distorted Triangle', 105);
+hfig_high = plot_testcase(sig_high, res_high, 'Highly Distorted Triangle', 106);

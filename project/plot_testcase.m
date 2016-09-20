@@ -1,4 +1,4 @@
-function hfig = plot_testcase(sim_results, name, signal, figno)
+function hfig = plot_testcase(signal, sim_results, name, figno)
 % PLOT_TESTCASE Plots results saved in parameter and hybrid table
 %
 % Plots a Testcase, a testcase consists of: An input function signal, the
@@ -6,12 +6,12 @@ function hfig = plot_testcase(sim_results, name, signal, figno)
 % parameter, and a testcasename name
 %
 % Input:
+%   signal          signal struct
 %   sim_results     struct from main.m
 %       .parameter       [form crest rms arv]
 %       .hybrid_table    [cut_off, e_base, e_peak, p_base, p_peak; ...]
 %       .single     struct: .energy, .power
 %   name            string, arbitrary testcase name
-%   signal          signal struct
 %   figno           optional, figure number the results will be plotted,
 %                   default: randi(1e8,1)
 % Output:
