@@ -29,7 +29,7 @@ if nargin < 3
 end
 if nargin < 4
     cut_off_fcn = @(x) x - 0.12*sin(2*pi*x);
-    cut_off_vector = cut_off_fcn([0:0.1:1]');
+    cut_off_vector = cut_off_fcn(linspace(0,1,51)');
 end
 
 

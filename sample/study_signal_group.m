@@ -25,7 +25,7 @@ if nargin < 3
 end
 if nargin < 4
     signal_para_fcn = @(x) x - 0.15*sin(x*2*pi);
-    signal_para_vec = signal_para_fcn(linspace(1e-2, 1 - 1e-2, 11));
+    signal_para_vec = signal_para_fcn(linspace(1e-2, 1 - 1e-2, 31));
 end
 
 
