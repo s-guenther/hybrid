@@ -58,7 +58,7 @@ axis tight
 
 % subplot of input fcn
 ax_t_signal = axes('Position', [.6 .2 .25 .2], 'Visible', 'off')
-t = linspace(0, 2*pi);
+t = linspace(0, 2*pi, 2e2);
 plot(t, signal.fcn(t), t, zeros(size(t)), 'k')
 xlabel('Time')
 ylabel('Amplitude')
