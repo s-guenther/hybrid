@@ -14,6 +14,8 @@ function out = main(signal, calc_max_step, calc_max_tol, cut_off_vector)
 %       .hybrid_table   [cut_off | base.energy | peak.energy | ...
 %                        base.power | peak.power]
 %       .parameter      [form, crest, rms, arv, amv]
+%       .transformed    rotated and normed (x,y) value pairs
+%       .peak           (x,y) peak of transformed data (interpolated)
 %
 % Theory involves: cutting signal at specific value, calculating separate
 % storages for this, no inter storage power flow (transloading). Only valid
@@ -61,5 +63,6 @@ end
 out.single = ssingle;
 out.hybrid_table = hybrid_table;
 out.parameter = signal_parameters(signal);
+out = transform_and_peak(out);
 
 end%fcn

@@ -1,4 +1,4 @@
-function result = study_l_shape_horz(l_cut)
+function result = study_l_shape_horz(l_cut, name)
 % STUDY_L_SHAPE_HORZ defs L w/ variable horz line, calls study_signal_group
 %
 % From a square function (positive amplitude) another square is cut out, the
@@ -13,12 +13,17 @@ function result = study_l_shape_horz(l_cut)
 % Input:
 %   l_cut   optional, default: 0.25
 %           defines the thickness of the vertical leg of the L
+%   name    optional, default: 'L_Shape, horz. cut'
+%           group name of testcase
 %
 % Output:
 %   result  cell array/vector, from study_signal_group
 
 if nargin < 1
     l_cut = 0.25;
+end
+if nargin < 2
+    name = 'L_Shape, horz. cut';
 end
 
 % Definition of L-shaped fcn, 1 period, must be overloaded
@@ -32,6 +37,6 @@ generic_l_shape_h.amplitude = 1;
 generic_l_shape_h.period = 2*pi;
 generic_l_shape_h.fcn = @(t, a) l_shape_fcn(mod(t, 2*pi), a, l_cut);
 
-result = study_signal_group(generic_l_shape_h, 'L_Shape, horz. cut', 1);
+result = study_signal_group(generic_l_shape_h, name, 1);
 
 end

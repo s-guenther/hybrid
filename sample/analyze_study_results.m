@@ -23,19 +23,19 @@ study_results = add_peak_and_trans_to_study_results(study_results);
 result_matrix = [peak_x, peak_y, form, crest];
 
 if showresults
-    figure, plot(peak_x, [crest, form, crest./form], 'x')
-    legend('form', 'crest', 'crest/form')
-    xlabel('peak x')
-    figure, plot(peak_y, [crest, form, crest./form], 'x')
-    legend('form', 'crest', 'crest/form')
-    xlabel('peak y')
-
-    figure, plot(crest./form, peak_y, 'x')
-    xlabel('crest./form')
-    ylabel('peak y')
-    figure, plot(crest./form, peak_x, 'x')
-    xlabel('crest./form')
+    figure, semilogx(form, peak_x, 'x-'), grid on
+    xlabel('form')
     ylabel('peak x')
+    figure, semilogx(form, peak_y, 'x-'), grid on
+    xlabel('form')
+    ylabel('peak y')
+    
+    figure, semilogx(crest, peak_x, 'x-'), grid on
+    xlabel('crest')
+    ylabel('peak x')
+    figure, semilogx(crest, peak_y, 'x-'), grid on
+    xlabel('crest')
+    ylabel('peak y')
 end
 
 

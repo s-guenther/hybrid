@@ -11,11 +11,12 @@ function [xmax, ymax] = find_peak(x_vec, y_vec)
 % Output:
 %   xmax   position of peak
 %   ymax   peak value
+%
+% EDIT:
+% Interpolation does not work properly - switched to simple max finding in
+% original vectors
 
-interpfcn = @(x) interp1(x_vec, y_vec, x, 'spline');
-xx = linspace(min(x_vec), max(x_vec), 1e5);
-yy = interpfcn(xx);
-ymax = max(yy);
-xmax = xx(find(yy == ymax));
+ymax = max(y_vec);
+xmax = x_vec(find(y_vec == ymax));
 
 end
