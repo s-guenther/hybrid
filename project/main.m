@@ -6,7 +6,15 @@ function out = main(signal, calc_max_step, calc_max_tol, cut_off_vector)
 % visible and analysed.
 % 
 % Input:
-%   signal      struct, see issignalstruct
+%   signal          struct, see issignalstruct
+%   calc_max_step   maximum integration step size
+%                   optional, default 1e-2
+%   calc_max_tol    maximum allowed tolerance between hybrid and single
+%                   solution before error is thrown
+%                   optional, default 1e-2
+%   cut_off_vector  rel power sampling points
+%                   optional, default nonuniformly spaced vector w/ 11 ele
+%   
 %
 % Output:
 %   out         struct
@@ -16,6 +24,7 @@ function out = main(signal, calc_max_step, calc_max_tol, cut_off_vector)
 %       .parameter      [form, crest, rms, arv, amv]
 %       .transformed    rotated and normed (x,y) value pairs
 %       .peak           (x,y) peak of transformed data (interpolated)
+%       .theo_peak      theoretically obtained peak (x,y)
 %
 % Theory involves: cutting signal at specific value, calculating separate
 % storages for this, no inter storage power flow (transloading). Only valid
@@ -64,5 +73,6 @@ out.single = ssingle;
 out.hybrid_table = hybrid_table;
 out.parameter = signal_parameters(signal);
 out = transform_and_peak(out);
+out = add_theo_peak(out);
 
 end%fcn

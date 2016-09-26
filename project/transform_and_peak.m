@@ -2,7 +2,7 @@ function result_mod = transform_and_peak(result)
 % TRANSFORM_AND_PEAK coord trans data and adds peak pos of peak storage
 %
 % Calls coord_trans_result and then adds the peak of the leaf function of
-% teh peak storage afterwards.
+% the peak storage afterwards.
 %
 % Input:
 %   result      result struct, output of coord_trans_result

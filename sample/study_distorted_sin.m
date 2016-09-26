@@ -17,10 +17,10 @@ amp = @(x,a) abs(x).^((log(a)/log(0.5))^4).*(x > 0 & a <= 0.5) - ...
              abs(x).^((log(a)/log(0.5)))  .*(x > 0 & a > 0.5) - ...
              abs(x).^((log(a)/log(0.5)))  .*(x < 0 & a > 0.5);
 
-generic_l_shape_v.amplitude = 1;
-generic_l_shape_v.period = 2*pi;
-generic_l_shape_v.fcn = @(t, a) amp(sin(t),a);
+generic_dist_sin.amplitude = 1;
+generic_dist_sin.period = 2*pi;
+generic_dist_sin.fcn = @(t, a) amp(sin(t),a);
 
-result = study_signal_group(generic_l_shape_v, 'Distorted Sinus', 1);
+result = study_signal_group(generic_dist_sin, 'Distorted Sinus', 1);
 
 end
