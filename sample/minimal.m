@@ -5,4 +5,4 @@ signal = struct('fcn', @(t) sin(t), ...
                 'amplitude', 1);
 
 results = main(signal)
-hfig = plot_testcase(results, 'Simple Sinus', signal);
+hfig = plot_leaf(signal, results, 'Simple Sinus');

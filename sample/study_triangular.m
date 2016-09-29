@@ -20,6 +20,6 @@ generic_triangular.fcn = @(t,a) interp1(fcn_x_vec(a), ...
                                         mod(t, 2*pi), ...
                                         'linear');
 
-result = study_signal_group(generic_triangular, 'Triangular', 1);
+result = study_signal_group(generic_triangular, 'Triangular', 1, 0.5);
 
 end

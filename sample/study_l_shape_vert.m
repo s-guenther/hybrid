@@ -23,7 +23,7 @@ if nargin < 1
     l_cut = 0.25;
 end
 if nargin < 2
-    name = 'L_Shape, horz. cut';
+    name = 'L_Shape, vert. cut';
 end
 
 % Definition of L-shaped fcn, 1 period, must be overloaded
