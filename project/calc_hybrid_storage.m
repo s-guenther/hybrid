@@ -1,4 +1,4 @@
-function [base, peak] = calc_hybrid_storage(signal, p_cut_ratio)
+function [base, peak] = calc_hybrid_storage(signal, p_cut_ratio, max_step)
 % CALC_HYBRID_STORAGE calcs energy, power for base and peak storage
 %
 % For a given power ratio, where the peak storage begins to work, the energy
@@ -7,12 +7,17 @@ function [base, peak] = calc_hybrid_storage(signal, p_cut_ratio)
 % Input:
 %   signal          signal struct, see issignalstruct
 %   p_cut_ratio     power ratio, where peak begins to work, between 0..1
+%   max_step        optional, default 1e-2, max integration step size
 %
 % Output:
 %   base.energy     energy of base storage
 %   base.power      power of base storage
 %   peak.energy     energy of peak storage
 %   peak.power      power of peak storage
+
+if nargin < 3
+    max_step = 1e-2;
+end
 
 % create new signal structs for base and peak storage
 signal_base = signal;
@@ -24,8 +29,8 @@ signal_peak.amplitude = signal.amplitude*(1 - p_cut_ratio);
 signal_peak.fcn = @(t) peak_signal(signal.fcn(t), signal_base.amplitude);
 
 % Calculate storage for separated fcns
-[base.energy, base.power] = calc_single_storage(signal_base, 1e-2);
-[peak.energy, peak.power] = calc_single_storage(signal_peak, 1e-2);
+[base.energy, base.power] = calc_single_storage(signal_base, max_step);
+[peak.energy, peak.power] = calc_single_storage(signal_peak, max_step);
 
 end%fcn
 
