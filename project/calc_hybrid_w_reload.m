@@ -44,15 +44,17 @@ p_base = @(t, e_peak) op_strat_reload_dim(p_in(t), t, p_base_max, e_peak, period
 % Construct dae
 % y1.. e_base, y2.. e_peak, y3.. dae for p_base, y4.. dae for p_peak
 dae = @(t,y) [dedt_base(p_base(t, y(2)));
-              dedt_peak(-p_in(t) - p_base(t, y(2)))];
+              dedt_peak(y(3));
+              p_in(t) + p_base(t, y(2)) + y(3);
+              ];
 
 
 % Set up for dae solving
-opt = odeset('MaxStep', max_step);
-[t, y] = ode23s(dae, [0 signal.period], [0, 0], opt);
+opt = odeset('MaxStep', max_step, 'Mass', diag([1, 1, 0]));
+[t, y] = ode23t(dae, [0 signal.period], [0, 0, 0], opt);
 
 plot(t,y),
-legend('e_base','e_peak','p_base', 'p_peak', 'dae', 'p_in'), 
+legend('e_base','e_peak','p_peak'), 
 grid on, 
 axis tight
 
