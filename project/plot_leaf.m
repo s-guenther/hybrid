@@ -26,8 +26,16 @@ end
 % plot graph
 hfig = figure(figno);
 clf, hold on, grid on
+
 plot(sim_results.hybrid_table(:,2), sim_results.hybrid_table(:,4), 'gx-')
 plot(sim_results.hybrid_table(:,3), sim_results.hybrid_table(:,5), 'rx-')
+
+plot(sim_results.reload_table(:,2), sim_results.reload_table(:,4), 'go--')
+plot(sim_results.reload_table(:,3), sim_results.reload_table(:,5), 'ro--')
+
+xcrossline = [sim_results.hybrid_table(1,2), sim_results.hybrid_table(end,2)];
+ycrossline = [sim_results.hybrid_table(1,4), sim_results.hybrid_table(end,4)];
+plot(xcrossline, ycrossline, 'k:')
 
 % make pretty + additional information
 title(name)

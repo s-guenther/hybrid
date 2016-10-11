@@ -1,5 +1,5 @@
 function [base, peak] = calc_hybrid_w_reload(signal, p_cut_ratio, ...
-                                             inter, max_step)
+                                             inter, max_step, output)
 % CALC_HYBRID_W_RELOAD simulation w/ inter storage power flow
 %
 % Calculates for a point symmetric input signal and a given power ratio the
@@ -10,11 +10,13 @@ function [base, peak] = calc_hybrid_w_reload(signal, p_cut_ratio, ...
 %   signal          signal struct, see issignalstruct
 %   p_cut_ratio     power ratio, where peak begins to work, between 0..1
 %   inter           optional, default 0, calculates hybrid storage with an
-%                   intermediate point strategy within the leaf, as a fraction
-%                   of p_cut_ratio, partial reloading of maximum possible
+%                   intermediate point strategy within the leaf, as a
+%                   fraction of p_cut_ratio, partial reloading of maximum
+%                   possible
 %                   0.. maximum possible reload strategy
 %                   1.. original boundary of leaf
 %   max_step        optional, default 1e-2, max integration step size
+%   output          optional, default False, if True, plot diagram
 %
 % Output:
 %   base.energy     energy of base storage
@@ -30,30 +32,51 @@ end
 if nargin < 4
     max_step = 1e-2;
 end
+if nargin < 5
+    output = 0;
+end
+
 
 % Define storage odes
 dedt_base = @(p_base) -p_base;
 dedt_peak = @(p_peak) -p_peak;
 
 % extract signal info
-p_in = signal.fcn;
 period = signal.period;
 p_base_max = signal.amplitude*p_cut_ratio;
-p_base = @(t, e_peak) op_strat_reload_dim(p_in(t), t, p_base_max, e_peak, period);
 
-% Construct dae
-% y1.. e_base, y2.. e_peak, y3.. dae for p_base, y4.. dae for p_peak
-dae = @(t,y) [dedt_base(p_base(t, y(2)));
-              dedt_peak(-p_in(t) - p_base(t, y(2)))];
+p_in = signal.fcn;
 
+p_base = @(p_in, e_peak) op_strat_reload_dim(p_in, e_peak, p_base_max);
+p_peak = @(p_in, p_base) -p_in - p_base;
 
-% Set up for dae solving
+% Construct ode w/ op_strat
+% y1.. e_base, y2.. e_peak
+ode = @(t,y) [dedt_base(p_base(p_in(t), y(2)));
+              dedt_peak(p_peak(p_in(t), p_base(p_in(t), y(2))))];
+
+% Set up ode solving
 opt = odeset('MaxStep', max_step);
-[t, y] = ode23s(dae, [0 signal.period], [0, 0], opt);
+[t, y] = ode45(ode, [0 period/2], [0, 0], opt);
 
-plot(t,y),
-legend('e_base','e_peak','p_base', 'p_peak', 'dae', 'p_in'), 
-grid on, 
-axis tight
+% Determine base, peak storage dimensions
+peak.energy = max(y(:, 2));
+peak.power = signal.amplitude*(1 - p_cut_ratio);
+
+diff_peak = peak.energy - y(end, 2);
+base.energy = y(end, 1) - diff_peak;
+base.power = signal.amplitude*p_cut_ratio;
+
+% output
+if output
+    p_in_vec = p_in(t);
+    p_base_vec = p_base(p_in_vec, y(:,2));
+    p_peak_vec = p_peak(p_in_vec, p_base_vec);
+    plot(t,[y, p_base_vec, p_peak_vec, p_in_vec]),
+    legend({'e_base','e_peak','p_base', 'p_peak', 'p_in'}, ...
+           'Location', 'NorthWest'),
+    grid on,
+    axis tight
+end
 
 end%mainfcn
