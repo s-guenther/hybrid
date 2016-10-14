@@ -44,10 +44,12 @@ dedt_peak = @(p_peak) -p_peak;
 % extract signal info
 period = signal.period;
 p_base_max = signal.amplitude*p_cut_ratio;
+p_peak_max = signal.amplitude*(1 - p_cut_ratio);
 
 p_in = signal.fcn;
 
-p_base = @(p_in, e_peak) op_strat_reload_dim(p_in, e_peak, p_base_max);
+p_base = @(p_in, e_peak) op_strat_reload_dim(p_in, e_peak, ...
+                                             p_base_max, p_peak_max);
 p_peak = @(p_in, p_base) -p_in - p_base;
 
 % Construct ode w/ op_strat
