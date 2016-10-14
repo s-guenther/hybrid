@@ -21,10 +21,15 @@ function p_base = op_strat_reload_dim(p_in, e_peak, p_base_max, p_peak_max)
 % dimensioning. Strategy will fail afterwards.
 
 % FIXME Generalize for shorth change of sign
-% FIXME peak can discharge at higher rates when it cuts base
 
-p_base = -p_in      .*(e_peak <= 0 & abs(p_in) <= p_base_max) + ...
-         -p_base_max.*(e_peak <= 0 & abs(p_in) > p_base_max) + ...
-         -min(p_base_max, p_in + p_peak_max).*(e_peak > 0);
+% p_base = -p_in      .*(e_peak <= 0 & abs(p_in) <= p_base_max) + ...
+%          -p_base_max.*(e_peak <= 0 & abs(p_in) > p_base_max) + ...
+%          -min(p_base_max, p_in + p_peak_max).*(e_peak > 0);
+
+p_peak_request = p_peak_max*(e_peak > 0);
+
+p_base_virtual = p_in + p_peak_request;
+
+p_base = -sign(p_base_virtual).*min(abs(p_base_virtual), p_base_max);
 
 end

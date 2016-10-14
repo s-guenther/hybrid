@@ -16,7 +16,8 @@ function [base, peak] = calc_hybrid_w_reload(signal, p_cut_ratio, ...
 %                   0.. maximum possible reload strategy
 %                   1.. original boundary of leaf
 %   max_step        optional, default 1e-2, max integration step size
-%   output          optional, default False, if True, plot diagram
+%   output          optional, default 0, if True (arbitrary integer number),
+%                   plot diagram in figure <integer output number>
 %
 % Output:
 %   base.energy     energy of base storage
@@ -74,7 +75,8 @@ if output
     p_in_vec = p_in(t);
     p_base_vec = p_base(p_in_vec, y(:,2));
     p_peak_vec = p_peak(p_in_vec, p_base_vec);
-    plot(t,[y, p_base_vec, p_peak_vec, p_in_vec]),
+    figure(floor(double(output))),
+    plot(t, [y, p_base_vec, p_peak_vec, p_in_vec]),
     legend({'e_base','e_peak','p_base', 'p_peak', 'p_in'}, ...
            'Location', 'NorthWest'),
     grid on,
