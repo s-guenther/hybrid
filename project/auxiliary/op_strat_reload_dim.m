@@ -19,12 +19,8 @@ function p_base = op_strat_reload_dim(p_in, e_peak, p_base_max, p_peak_max)
 % The first half period the system is in 'charge mode', the second half in
 % 'discharge mode'. Only the first half of the period is needed. For
 % dimensioning. Strategy will fail afterwards.
+% Change of sign in input signal possible if it is not "severe".
 
-% FIXME Generalize for shorth change of sign
-
-% p_base = -p_in      .*(e_peak <= 0 & abs(p_in) <= p_base_max) + ...
-%          -p_base_max.*(e_peak <= 0 & abs(p_in) > p_base_max) + ...
-%          -min(p_base_max, p_in + p_peak_max).*(e_peak > 0);
 
 p_peak_request = p_peak_max*(e_peak > 0);
 
