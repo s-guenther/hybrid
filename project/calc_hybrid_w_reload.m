@@ -74,7 +74,18 @@ diff_peak = peak.energy - y(end, 2);
 base.energy = y(end, 1) - diff_peak;
 base.power = signal.amplitude*p_cut_ratio;
 
-% output
+% if interpoint strategy: recalculate base and peak energy
+if inter
+    [~, peak_wo] = calc_hybrid_storage(signal, p_cut_ratio, 0, max_step);
+    peak_change_factor = (peak_wo.energy/peak.energy - 1)*inter;
+    base.energy = base.energy - peak.energy*peak_change_factor; 
+    peak.energy = peak.energy*(1 + peak_change_factor);
+end
+
+% Compare to single
+[ssingle.energy, ssingle.power] = calc_single_storage(signal);
+
+% plot if output true, for this, simulated with correct strategy before
 if output
     % Solve system with real strategy
     storage_info.e_base = base.energy;
@@ -125,7 +136,7 @@ if output
           ',  p_{base} = ' num2str(base.power)]; ...
           ['(e/p)_{peak} = ' num2str(peak.energy/peak.power), ...
            ',  (e/p)_{base} = ' num2str(base.energy/base.power), ...
-           ',  (e/p)_{single} = ' num2str((base.energy + peak.energy)/(base.power + peak.power))]})
+           ',  (e/p)_{single} = ' num2str(ssingle.energy/ssingle.power)]})
     grid on, axis tight
 
     subplot(60,1,50:60)
