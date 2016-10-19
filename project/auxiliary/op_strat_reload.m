@@ -1,7 +1,8 @@
 function [p_base, p_peak, p_diff] = op_strat_reload(t, p_in, ...
                                                     e_base, e_peak, ...
                                                     storage_info, ...
-                                                    signal_info)
+                                                    signal_info, ...
+                                                    tanh_grad)
 % OP_STRAT_RELOAD time dependend operational strat for dimensioning
 %
 % Is a generic operational strategy considering reloading or inter storage
@@ -19,6 +20,10 @@ function [p_base, p_peak, p_diff] = op_strat_reload(t, p_in, ...
 %                   .e_base, .e_peak, .p_base, .p_peak
 %   signal_info     struct, information structure (see issignalstruct)
 %                   .period, .amplitude
+%   tanh_grad       optional, default = 50, gradient of the tanh function
+%                   smoothing the peak power reduction. To prevent numerical
+%                   oscilliation. The lower the value, the smoother the
+%                   function.
 %
 % Output:
 %   p_base          power of base storage
@@ -30,6 +35,11 @@ function [p_base, p_peak, p_diff] = op_strat_reload(t, p_in, ...
 % it to be point symmetric. Storage info contains ideal two-storage
 % parameter. Structs can be extended for more sophisticated strategies,
 % later.
+
+if nargin < 7
+    tanh_grad = 50;
+end
+
 
 e_base_max = storage_info.e_base;
 e_peak_max = storage_info.e_peak;
@@ -54,37 +64,36 @@ p_diff = powers(:,3);
 
     % NESTED FCNS
     function powers = standard_operation()
-        % p_peak_request = p_peak_max.*(soc_peak > soc_aim + 1e-4) + ...
-        %                 -p_peak_max.*(soc_peak < soc_aim - 1e-4);
-        p_peak_request = p_peak_max.*tanh(50*(soc_peak - soc_aim));
+        peak_request = p_peak_max.*tanh(tanh_grad*(soc_peak - soc_aim));
 
-        p_base_virtual = -(p_in + p_peak_request);
-        p_base_nes = (p_base_virtual > 0 & e_base > 0).* ...
-                            min(p_base_virtual, p_base_max) + ...
-                     (p_base_virtual < 0 & e_base < e_base_max).* ...
-                            max(p_base_virtual, -p_base_max);
+        base_virtual = -(p_in + peak_request);
+        base = (base_virtual > 0 & e_base > 0).* ...
+                        min(base_virtual, p_base_max) + ...
+               (base_virtual < 0 & e_base < e_base_max).* ...
+                        max(base_virtual, -p_base_max);
 
-        p_peak_virtual = - p_in - p_base_nes;
-        p_peak_nes = (p_peak_virtual > 0 & e_peak > 0).* ...
-                            min(p_peak_virtual, p_peak_max) + ...
-                     (p_peak_virtual < 0 & e_peak < e_peak_max).* ...
-                            max(p_peak_virtual, -p_peak_max);
+        peak_virtual = - p_in - base;
+        peak = (peak_virtual > 0 & e_peak > 0).* ...
+                        min(peak_virtual, p_peak_max) + ...
+               (peak_virtual < 0 & e_peak < e_peak_max).* ...
+                        max(peak_virtual, -p_peak_max);
 
-        p_diff_nes = - p_in - p_base_nes - p_peak_nes;
+        diffp = - p_in - base - peak;
 
-        powers = [p_base_nes, p_peak_nes, p_diff_nes];
+        powers = [base, peak, diffp];
     end
 
     function powers = synchronized_operation()
         cut = p_base_max/(p_base_max + p_peak_max);
 
-        p_peak_nes = -(1 - cut)*p_in.*(e_peak < e_peak_max & e_peak > 0);
-        p_base_nes = (- p_in - p_peak_nes).*(e_base < e_base_max & e_base > 0);
-        p_peak_nes = (- p_in - p_base_nes).*(e_peak < e_peak_max & e_peak > 0);
+        % Double assign peak in case base energy is already at min/max
+        peak = -(1 - cut)*p_in.*(e_peak < e_peak_max & e_peak > 0);
+        base = (- p_in - peak).*(e_base < e_base_max & e_base > 0);
+        peak = (- p_in - base).*(e_peak < e_peak_max & e_peak > 0);
 
-        p_diff_nes = - p_in - p_base_nes - p_peak_nes;
+        diffp = - p_in - base - peak;
 
-        powers = [p_base_nes, p_peak_nes, p_diff_nes];
+        powers = [base, peak, diffp];
     end
 
 end%mainfcn

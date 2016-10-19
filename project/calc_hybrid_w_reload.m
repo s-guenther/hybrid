@@ -104,12 +104,37 @@ if output
     p_peak_vec = p_peak(t, p_in_vec, y(:,1), y(:,2));
     p_diff_vec = p_diff(t, p_in_vec, y(:,1), y(:,2));
     figure(floor(double(output))),
-    plot(t, [y, p_in_vec, p_base_vec, p_peak_vec, p_diff_vec]),
-    legend({'e_{base}','e_{peak}', ...
-            'p_{in}', 'p_{base}', 'p_{peak}', 'p_{diff}'}, ...
+    subplot(60,1,1:30),
+    plot(t, p_in_vec, 'b', t, p_base_vec, 'g', ...
+         t, p_peak_vec, 'r', t, 1e2*p_diff_vec, 'm');
+    ax = gca; ax.XTick = [((0:0.125:1)*2*pi)]; ax.XTickLabel = {};
+    legend({'p_{in}', 'p_{base}', 'p_{peak}', 'p_{diff}*1e2'}, ...
            'Location', 'NorthWest'),
-    grid on,
-    axis tight
+    ylabel('Power')
+    grid on, axis tight, ylim([min(p_in_vec), max(p_in_vec)])
+
+    subplot(60,1,32:48)
+    plot(t, y(:,1), 'g', t, y(:,2), 'r');
+    ax = gca; ax.XTick = [((0:0.125:1)*2*pi)]; ax.XTickLabel = {};
+    legend({'e_{base}', 'e_{peak}'}, 'Location', 'NorthWest'),
+    ylabel('Energy')
+    text(0.02*t(end), 0.5*max(max(y)), ...
+         {['e_{peak} = ' num2str(peak.energy), ...
+           ',  e_{base} = ' num2str(base.energy)]; ...
+          ['p_{peak} = ' num2str(peak.power), ...
+          ',  p_{base} = ' num2str(base.power)]; ...
+          ['(e/p)_{peak} = ' num2str(peak.energy/peak.power), ...
+           ',  (e/p)_{base} = ' num2str(base.energy/base.power), ...
+           ',  (e/p)_{single} = ' num2str((base.energy + peak.energy)/(base.power + peak.power))]})
+    grid on, axis tight
+
+    subplot(60,1,50:60)
+    plot(t, y(:,1)/max(y(:,1)), 'g', t, y(:,2)/max(y(:,2)), 'r');
+    ax = gca; ax.XTick = [((0:0.125:1)*2*pi)];
+    legend({'soc_{base}', 'soc_{peak}'}, 'Location', 'NorthWest'),
+    ylabel('SOC')
+    xlabel('Time')
+    grid on, axis tight
 end
 
 end%mainfcn
