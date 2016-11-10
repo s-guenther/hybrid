@@ -118,7 +118,7 @@ if output
     subplot(60,1,1:30),
     plot(t, p_in_vec, 'b', t, p_base_vec, 'g', ...
          t, p_peak_vec, 'r', t, 1e2*p_diff_vec, 'm');
-    ax = gca; ax.XTick = [((0:0.125:1)*2*pi)]; ax.XTickLabel = {};
+    ax = gca; ax.XTick = [((0:0.125:1)*signal.period)]; ax.XTickLabel = {};
     legend({'p_{in}', 'p_{base}', 'p_{peak}', 'p_{diff}*1e2'}, ...
            'Location', 'NorthWest'),
     ylabel('Power')
@@ -126,7 +126,7 @@ if output
 
     subplot(60,1,32:48)
     plot(t, y(:,1), 'g', t, y(:,2), 'r');
-    ax = gca; ax.XTick = [((0:0.125:1)*2*pi)]; ax.XTickLabel = {};
+    ax = gca; ax.XTick = [((0:0.125:1)*signal.period)]; ax.XTickLabel = {};
     legend({'e_{base}', 'e_{peak}'}, 'Location', 'NorthWest'),
     ylabel('Energy')
     text(0.02*t(end), 0.5*max(max(y)), ...
@@ -141,7 +141,7 @@ if output
 
     subplot(60,1,50:60)
     plot(t, y(:,1)/max(y(:,1)), 'g', t, y(:,2)/max(y(:,2)), 'r');
-    ax = gca; ax.XTick = [((0:0.125:1)*2*pi)];
+    ax = gca; ax.XTick = [((0:0.125:1)*signal.period)];
     legend({'soc_{base}', 'soc_{peak}'}, 'Location', 'NorthWest'),
     ylabel('SOC')
     xlabel('Time')
