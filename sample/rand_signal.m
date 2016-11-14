@@ -12,18 +12,21 @@ function signal = rand_signal(seed, ...
 % Input:
 %   seed            optional, default 'shuffle', integer number for random
 %                   generator
-%   ruggedness      optional, default 3, abstract measure for fluctuations in
-%                   signal
-%   n_harmonics     optional, default 3, integer, number of harmonics in signal
-%                   option: if vector is passed, use this specific harmonics
-%                   instead of generating them randomly
-%   high_harmonic   optional, default 10, highest occouring harmonic in signal
-%                   superflous if vector is passed in n_harmonics
+%   ruggedness      optional, default 3, abstract measure for fluctuations
+%                   in signal, if passed as vector, use this specific
+%                   ruggedness for each frequency. Size must be equal to
+%                   n_harmonics or length(n_harmonics), respectively.
+%   n_harmonics     optional, default 3, integer, number of harmonics in
+%                   signal option: if vector is passed, use this specific
+%                   harmonics instead of generating them randomly
+%   high_harmonic   optional, default 10, highest occouring harmonic in
+%                   signal superflous if vector is passed in n_harmonics
+%   rel_mu          optional, default 0.5, fraction of the expected
+%                   rectified mean value the signal is shifted upwards
 %   symmetric       optional, default 0, boolean, if true: discharge side is
 %                   point symmmetric to charge site
-%   n_subperiods    optional, default 1, number of subperiods within the signal
-%   zerosections    optional, default 0, specifies the percentage of time
-%                   where the signal is zero
+%   zerosections    optional, default 0, specifies the percentage of
+%                   time where the signal is zero
 %   period          optional, default 2*pi, length of period
 %   amplitude       optional, default 1, maximum peak (positive or negative)
 %
@@ -47,10 +50,10 @@ if nargin < 4
     high_harmonic = 10;
 end
 if nargin < 5
-    symmetric = 0;
+    rel_mu = 0.5;
 end
 if nargin < 6
-    n_subperiods = 1;
+    symmetric = 0;
 end
 if nargin < 7
     zerosections = 0;
@@ -69,38 +72,54 @@ rng(seed, 'twister');
 %% Charging phase TODO call subfcn here, construct mult periods in main fcn
 
 % set expected charge power and duration
-mu = rand();
-Tc = ceil(100*rand());
+Tp = 100;
+Tc = ceil(Tp*(0.5*rand() + 0.25));
 
-% Set frequency an amplitudes of harmonics
+% Set frequency and amplitudes of harmonics
 if length(n_harmonics) > 1
     harmonics = n_harmonics;
 else
     harmonics = [sort(randi([2 high_harmonic-1], 1, n_harmonics - 1)), ...
                  high_harmonic];
 end
-amp_harm = mu*ruggedness*(harmonics/max(harmonics)).^(1/5).* ...
-           (1 + 0.3*randn(size(harmonics)));
+amp_harm = abs(1 + ruggedness.*randn(size(harmonics)));
 
 % generate base signal and add harmonics iteratively
-base_sig = @(t) mu;
+mean_gauss = sqrt(2/pi);
+mu = rel_mu*mean(amp_harm)*mean_gauss;
+base_sig = @(t) mu.*(t <= Tc) + -mu*(Tc)/(Tp-Tc).*(t > Tc);
 for ii = 1:length(harmonics)
-    n_points = harmonics(ii) + 1;
-    points = [0, (1:(n_points-2)) + (rand(1, n_points-2)-0.5), n_points]*Tc/n_points;
+    n_points = 4*harmonics(ii) + 1;
+    points = [0, (1:(n_points-2)) + (rand(1, n_points-2)-0.5), n_points]*4*Tp/n_points;
     vals = base_sig(points) + randn(1, n_points)*amp_harm(ii);
-    base_sig = @(t) interp1(points, vals, t, 'spline');
+    base_sig = @(t) interp1(points, vals, t, 'pchip');
 end
 
+% integrate signal, add mu_top, mu_bot, cut exceeding vals
+[time, energy] = ode45(@(t,y) base_sig(t), [0 4*Tp], 0, ...
+                       odeset('MaxStep', 2e-1*4*Tp/n_points));
+power = base_sig(time);
+cut_low = 0;
+cut_top = inf;
+% filter energy exceedings;
+power = power(energy > cut_low & energy < cut_top);
+dtime = [0; diff(time)];
+dtime = dtime(energy > cut_low & energy < cut_top);
+time = [cumsum(dtime)];
+energy = energy(energy > cut_low & energy < cut_top);
+% construct f_handle again
+base_sig = @(t) interp1(time, power, t, 'pchip');
+
+
 % determine max amplitude
-real_amplitude = max(abs(base_sig(linspace(0, Tc, 1e5))));
-real_period = Tc;
+real_amplitude = max(abs(power));
+real_period = time(end);
 signal.amplitude = amplitude;
 signal.period = period;
-signal.fcn = @(t) base_signal(t*real_period/period)*amplitude/real_amplitude;
-signal.fcn = @(t) interp1(period/real_period*points, ...
-                          amplitude/real_amplitude*vals, ...
+signal.fcn = @(t) interp1(period/real_period*time, ...
+                          amplitude/real_amplitude*power, ...
                           t,  ...
-                          'spline');
+                          'pchip');
 
 % to ensure fresh numbers for further calculations within matlab
 rng('shuffle', 'twister');
