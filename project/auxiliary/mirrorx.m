@@ -12,7 +12,7 @@ function rev_fcn_handle = mirrorx(input_fcn_handle, offset)
 %   rev_fcn_handle      Reversed Function Handle
 
 if nargin < 2
-    offset = 0
+    offset = 0;
 end
 
     rev_fcn_handle = @(t) 2*offset - input_fcn_handle(t);

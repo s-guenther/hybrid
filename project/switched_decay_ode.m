@@ -39,15 +39,15 @@ function dydt = switched_decay_ode(t, y, ...
 
 if nargin == 0
     dydt = {'@(t, y, build_val, decay_val) build_val >= 0;';
-            '@(t, y, build_val, decay_val) build_val < 0 & y > 0 & decay_val <= 0;'};
+            '@(t, y, build_val, decay_val) build_val <= 0 & y > 0 & decay_val <= 0;'};
     return
 end
 
 if nargin < 5
-    build_cond = @(t, y, build_val, decay_val) build_val >= 0;
+    build_cond = @(t, y, build_val, decay_val) build_val > 0;
 end
 if nargin < 6
-    decay_cond = @(t, y, build_val, decay_val) build_val < 0 & ...
+    decay_cond = @(t, y, build_val, decay_val) build_val <= 0 & ...
                                                y > 0 & ...
                                                decay_val <= 0;
 end

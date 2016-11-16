@@ -1,8 +1,8 @@
-function rev_fcn_handle = mirrory(input_fcn_handle, offset)
-% MIRRORY an input function with a coordinate transformation at period - t
+function rev_fcn_handle = reverse(input_fcn_handle, offset)
+% REVERSE an input function with a coordinate transformation at offset - t
 %
-% Reverses a signal. The new coordnate system starts at point offset and
-% points in opposite direction.
+% Reverses a signal. The new coordnate system starts at point in time
+% 'offset' and points in opposite direction.
 %
 % Input:
 %   input_fcn_handle    fcn handle of time, one dimensional, respectively
