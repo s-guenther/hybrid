@@ -1,5 +1,6 @@
 function [p_base, p_peak, p_diff] = op_strat_reload(t, p_in, ...
                                                     e_base, e_peak, ...
+                                                    soc_fcn, ...
                                                     storage_info, ...
                                                     signal_info, ...
                                                     tanh_grad)
@@ -16,6 +17,7 @@ function [p_base, p_peak, p_diff] = op_strat_reload(t, p_in, ...
 %   p_in            power input (to both storages/storage system)
 %   e_base          current energy of base storage
 %   e_peak          current energy of peak storage
+%   soc_fcn         fcn handle specifying the aimed soc as fcn of time
 %   storage_info    struct, dimensions of storage
 %                   .e_base, .e_peak, .p_base, .p_peak
 %   signal_info     struct, information structure (see issignalstruct)
@@ -36,8 +38,8 @@ function [p_base, p_peak, p_diff] = op_strat_reload(t, p_in, ...
 % parameter. Structs can be extended for more sophisticated strategies,
 % later.
 
-if nargin < 7
-    tanh_grad = 50;
+if nargin < 8
+    tanh_grad = 100;
 end
 
 
@@ -49,7 +51,7 @@ p_peak_max = storage_info.p_peak;
 T = signal_info.period;
 
 soc_peak = e_peak./e_peak_max;
-soc_aim = 0.*(mod(t, T) <= T/2) + 1.*(mod(t, T) > T/2);
+soc_aim = soc_fcn(t);
 
 tau_peak = time_to_aim(e_peak, e_peak_max, p_peak_max, soc_aim);
 tau_base = time_to_aim(e_base, e_base_max, p_base_max, soc_aim);

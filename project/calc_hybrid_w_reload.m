@@ -15,7 +15,7 @@ function [base, peak] = calc_hybrid_w_reload(signal, p_cut_ratio, ...
 %                   possible
 %                   0.. maximum possible reload strategy
 %                   1.. original boundary of leaf
-%   max_step        optional, default 1e-2, max integration step size
+%   max_step        optional, default 1e-1, max integration step size
 %   output          optional, default 0, if True (arbitrary integer number),
 %                   plot diagram in figure <integer output number>
 %
@@ -35,55 +35,64 @@ if nargin < 3
     inter = 0;
 end
 if nargin < 4
-    max_step = 1e-2;
+    max_step = 1e-1;
 end
 if nargin < 5
     output = 0;
 end
 
 
-% Define storage odes
-dedt_base = @(p_base) -p_base;
-dedt_peak = @(p_peak) -p_peak;
-
 % extract signal info
 period = signal.period;
 p_base_max = signal.amplitude*p_cut_ratio;
 p_peak_max = signal.amplitude*(1 - p_cut_ratio);
 
-p_in = signal.fcn;
+% integrate positive part of signal
+[build, decay] = build_decay_generator(signal, p_base_max);
+[tpos, ypos] = ode45(@(t,y) switched_decay_ode(t, y, build, decay), ...
+                     [0 period], 0, odeset('RelTol', 1e-5, 'MaxStep', max_step));
 
-p_base = @(p_in, e_peak) op_strat_reload_dim(p_in, e_peak, ...
-                                             p_base_max, p_peak_max);
-p_peak = @(p_in, p_base) -p_in - p_base;
+% integrate negative part of signal
+reversed = signal;
+reversed.fcn = mirrorx(reverse(signal.fcn, period));
+[revbuild, revdecay] = build_decay_generator(reversed, p_base_max);
+[tneg, yneg] = ode45(@(t,y) switched_decay_ode(t, y, revbuild, revdecay), ...
+                     [0 period], 0, odeset('RelTol', 1e-5, 'MaxStep', max_step));
 
-% Construct ode w/ op_strat
-% y1.. e_base, y2.. e_peak
-ode = @(t,y) [dedt_base(p_base(p_in(t), y(2)));
-              dedt_peak(p_peak(p_in(t), p_base(p_in(t), y(2))))];
+% check validity
+assert(all(abs([ypos(end), yneg(end)]) < 1e-2), ...
+       'Unable to meet decay end condition - impossible storage config');
 
-% Set up ode solving
-opt = odeset('MaxStep', max_step);
-[t, y] = ode45(ode, [0 period/2], [0, 0], opt);
+% determine maximum peak storage size
+peak.energy = max(max(ypos), max(yneg));
+peak.power = p_peak_max;
 
-% Determine base, peak storage dimensions
-peak.energy = max(y(:, 2));
-peak.power = signal.amplitude*(1 - p_cut_ratio);
+% To determine base, calc single and substract peak
+[ssingle.energy, ssingle.power] = calc_single_storage(signal, max_step);
+base.energy = ssingle.energy - peak.energy;
+base.power = p_base_max;
 
-diff_peak = peak.energy - y(end, 2);
-base.energy = y(end, 1) - diff_peak;
-base.power = signal.amplitude*p_cut_ratio;
 
-% if interpoint strategy: recalculate base and peak energy
-if inter
-    [~, peak_wo] = calc_hybrid_storage(signal, p_cut_ratio, 0, max_step);
-    peak_change_factor = (peak_wo.energy/peak.energy - 1)*inter;
-    base.energy = base.energy - peak.energy*peak_change_factor; 
-    peak.energy = peak.energy*(1 + peak_change_factor);
-end
 
-% Compare to single
-[ssingle.energy, ssingle.power] = calc_single_storage(signal);
+% FIXME delete soon
+% 
+% intneg = @(t) interp1(tneg, yneg, t, 'spline');
+% revintneg = reverse(intneg, 2*pi)
+% 
+% % construct soc predictor
+% fw_decay = @(t) interp1(tpos, ypos, t, 'spline');
+% rev_bw_decay = @(t) interp1(tneg, yneg, t, 'spline');
+% bw_decay = reverse(rev_bw_decay, period);
+% soc = ideal_predictor(fw_decay, bw_decay);
+%     
+% tpos = linspace(0, period, 1e3);
+% figure
+% plot(tpos, signal.fcn(tpos), tpos, build(tpos), tpos, fw_decay(tpos), ...
+%      tpos, bw_decay(tpos), tpos, soc(tpos))
+% grid on
+% 
+% /FIXME
+
 
 % plot if output true, for this, simulated with correct strategy before
 if output
@@ -93,20 +102,31 @@ if output
     storage_info.p_base = base.power;
     storage_info.p_peak = peak.power;
 
+    % construct soc predictor
+    fw_decay = @(t) interp1(tpos, ypos, t, 'spline');
+    rev_bw_decay = @(t) interp1(tneg, yneg, t, 'spline');
+    bw_decay = reverse(rev_bw_decay, period);
+    soc = ideal_predictor(fw_decay, bw_decay); % FIXME Continue here
+
+    p_in = signal.fcn;
     p_base = @(t, p_in, e_base, e_peak) ...
              nth_output(1, @op_strat_reload, t, p_in, e_base, e_peak, ...
-                        storage_info, signal);
+                        soc, storage_info, signal);
     p_peak = @(t, p_in, e_base, e_peak) ...
              nth_output(2, @op_strat_reload, t, p_in, e_base, e_peak, ...
-                        storage_info, signal);
+                        soc, storage_info, signal);
     p_diff = @(t, p_in, e_base, e_peak) ...
              nth_output(3, @op_strat_reload, t, p_in, e_base, e_peak, ...
-                        storage_info, signal);
+                        soc, storage_info, signal);
+
+    % Define storage odes
+    dedt_base = @(p_base) -p_base;
+    dedt_peak = @(p_peak) -p_peak;
 
     ode = @(t, y) [dedt_base(p_base(t, p_in(t), y(1), y(2)));
                    dedt_peak(p_peak(t, p_in(t), y(1), y(2)))];
 
-    opt = odeset('MaxStep', max_step);
+    opt = odeset('MaxStep', max_step, 'RelTol', 1e-5);
     [t, y] = ode45(ode, [0 period], [0, 0], opt);
 
     % plot
@@ -122,7 +142,7 @@ if output
     legend({'p_{in}', 'p_{base}', 'p_{peak}', 'p_{diff}*1e2'}, ...
            'Location', 'NorthWest'),
     ylabel('Power')
-    grid on, axis tight, ylim([min(p_in_vec), max(p_in_vec)])
+    grid on, axis tight, ylim([-1 1]*max(abs(p_in_vec)))
 
     subplot(60,1,32:48)
     plot(t, y(:,1), 'g', t, y(:,2), 'r');
@@ -140,9 +160,9 @@ if output
     grid on, axis tight
 
     subplot(60,1,50:60)
-    plot(t, y(:,1)/max(y(:,1)), 'g', t, y(:,2)/max(y(:,2)), 'r');
-    ax = gca; ax.XTick = [((0:0.125:1)*signal.period)];
-    legend({'soc_{base}', 'soc_{peak}'}, 'Location', 'NorthWest'),
+    plot(t, y(:,1)/max(y(:,1)), 'g', t, y(:,2)/max(y(:,2)), 'r', t, soc(t));
+    ax = gca; ax.XTick = ((0:0.125:1)*signal.period);
+    legend({'soc_{base}', 'soc_{peak}', 'soc_{aim}'}, 'Location', 'NorthWest'),
     ylabel('SOC')
     xlabel('Time')
     grid on, axis tight
