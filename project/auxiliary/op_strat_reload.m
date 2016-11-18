@@ -51,13 +51,15 @@ p_peak_max = storage_info.p_peak;
 T = signal_info.period;
 
 soc_peak = e_peak./e_peak_max;
-soc_aim = soc_fcn(t);
+soc_aim = soc_fcn(e_peak, t);
 
 tau_peak = time_to_aim(e_peak, e_peak_max, p_peak_max, soc_aim);
 tau_base = time_to_aim(e_base, e_base_max, p_base_max, soc_aim);
 
 powers = repmat((tau_peak < tau_base), 1, 3).*standard_operation() +  ...
          repmat((tau_peak >= tau_base), 1, 3).*synchronized_operation();
+% powers = 1*standard_operation() +  ...
+%          0.*synchronized_operation();
 
 p_base = powers(:,1);
 p_peak = powers(:,2);

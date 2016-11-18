@@ -1,5 +1,5 @@
 function [base, peak] = calc_hybrid_w_reload(signal, p_cut_ratio, ...
-                                             inter, max_step, output)
+                                             inter, max_step, rel_tol, output)
 % CALC_HYBRID_W_RELOAD simulation w/ inter storage power flow
 %
 % Calculates for a point symmetric input signal and a given power ratio the
@@ -38,9 +38,14 @@ if nargin < 4
     max_step = 1e-1;
 end
 if nargin < 5
+    rel_tol = 1e-5;
+end
+if nargin < 6
     output = 0;
 end
 
+% set solver properties
+ode_opt = odeset('RelTol', rel_tol, 'MaxStep', max_step);
 
 % extract signal info
 period = signal.period;
@@ -50,14 +55,14 @@ p_peak_max = signal.amplitude*(1 - p_cut_ratio);
 % integrate positive part of signal
 [build, decay] = build_decay_generator(signal, p_base_max);
 [tpos, ypos] = ode45(@(t,y) switched_decay_ode(t, y, build, decay), ...
-                     [0 period], 0, odeset('RelTol', 1e-5, 'MaxStep', max_step));
+                     [0 period], 0, ode_opt);
 
 % integrate negative part of signal
 reversed = signal;
 reversed.fcn = mirrorx(reverse(signal.fcn, period));
 [revbuild, revdecay] = build_decay_generator(reversed, p_base_max);
 [tneg, yneg] = ode45(@(t,y) switched_decay_ode(t, y, revbuild, revdecay), ...
-                     [0 period], 0, odeset('RelTol', 1e-5, 'MaxStep', max_step));
+                     [0 period], 0, ode_opt);
 
 % check validity
 assert(all(abs([ypos(end), yneg(end)]) < 1e-2), ...
@@ -106,18 +111,18 @@ if output
     fw_decay = @(t) interp1(tpos, ypos, t, 'spline');
     rev_bw_decay = @(t) interp1(tneg, yneg, t, 'spline');
     bw_decay = reverse(rev_bw_decay, period);
-    soc = ideal_predictor(fw_decay, bw_decay); % FIXME Continue here
+    soc_fcn = ideal_predictor(bw_decay);
 
     p_in = signal.fcn;
     p_base = @(t, p_in, e_base, e_peak) ...
              nth_output(1, @op_strat_reload, t, p_in, e_base, e_peak, ...
-                        soc, storage_info, signal);
+                        soc_fcn, storage_info, signal);
     p_peak = @(t, p_in, e_base, e_peak) ...
              nth_output(2, @op_strat_reload, t, p_in, e_base, e_peak, ...
-                        soc, storage_info, signal);
+                        soc_fcn, storage_info, signal);
     p_diff = @(t, p_in, e_base, e_peak) ...
              nth_output(3, @op_strat_reload, t, p_in, e_base, e_peak, ...
-                        soc, storage_info, signal);
+                        soc_fcn, storage_info, signal);
 
     % Define storage odes
     dedt_base = @(p_base) -p_base;
@@ -126,8 +131,7 @@ if output
     ode = @(t, y) [dedt_base(p_base(t, p_in(t), y(1), y(2)));
                    dedt_peak(p_peak(t, p_in(t), y(1), y(2)))];
 
-    opt = odeset('MaxStep', max_step, 'RelTol', 1e-5);
-    [t, y] = ode45(ode, [0 period], [0, 0], opt);
+    [t, y] = ode45(ode, [0 period], [0, 0], ode_opt);
 
     % plot
     p_in_vec = p_in(t);
@@ -137,17 +141,31 @@ if output
     figure(floor(double(output))),
     subplot(60,1,1:30),
     plot(t, p_in_vec, 'b', t, p_base_vec, 'g', ...
-         t, p_peak_vec, 'r', t, 1e2*p_diff_vec, 'm');
+         t, p_peak_vec, 'r', t, 1e1*p_diff_vec, 'm');
     ax = gca; ax.XTick = [((0:0.125:1)*signal.period)]; ax.XTickLabel = {};
-    legend({'p_{in}', 'p_{base}', 'p_{peak}', 'p_{diff}*1e2'}, ...
+    legend({'p_{in}', 'p_{base}', 'p_{peak}', 'p_{diff}*1e1'}, ...
            'Location', 'NorthWest'),
     ylabel('Power')
     grid on, axis tight, ylim([-1 1]*max(abs(p_in_vec)))
 
+    % build handle for bw decay fcn
+    rev_bw_decay = @(t) interp1(tneg, yneg, t, 'spline');
+    bw_decay = reverse(rev_bw_decay, period);
+    bw_soc = @(t) bw_decay(t)/peak.energy;
+    % .. and for single storage
+    [tsingle, ysingle] = ode45(@(t,y) signal.fcn(t), [0, signal.period], 0, ...
+                               ode_opt)
+    intsig = @(t) interp1(tsingle, ysingle, t, 'spline');
+    intadd = y(:,1) + y(:,2);
+    socsig = @(t) intsig(t)/ssingle.energy;
+    socadd = intadd/ssingle.energy;
+
     subplot(60,1,32:48)
-    plot(t, y(:,1), 'g', t, y(:,2), 'r');
+    plot(t, intsig(t), 'b', t, intadd, 'b--', ...
+         t, y(:,1), 'g', t, y(:,2), 'r', t, bw_decay(t), 'r--');
     ax = gca; ax.XTick = [((0:0.125:1)*signal.period)]; ax.XTickLabel = {};
-    legend({'e_{base}', 'e_{peak}'}, 'Location', 'NorthWest'),
+    legend({'e_{single}', 'e_{add}', 'e_{base}', 'e_{peak}', ...
+            'e_{back}'}, 'Location', 'NorthWest'),
     ylabel('Energy')
     text(0.02*t(end), 0.5*max(max(y)), ...
          {['e_{peak} = ' num2str(peak.energy), ...
@@ -160,9 +178,15 @@ if output
     grid on, axis tight
 
     subplot(60,1,50:60)
-    plot(t, y(:,1)/max(y(:,1)), 'g', t, y(:,2)/max(y(:,2)), 'r', t, soc(t));
+    plot(t, socsig(t), 'b', ...
+         t, socadd, 'b--', ...
+         t, y(:,1)/max(y(:,1)), 'g', ...
+         t, y(:,2)/max(y(:,2)), 'r', ...
+         t, bw_soc(t), 'r--', ...
+         t, soc_fcn(y(:,2), t), 'm')
     ax = gca; ax.XTick = ((0:0.125:1)*signal.period);
-    legend({'soc_{base}', 'soc_{peak}', 'soc_{aim}'}, 'Location', 'NorthWest'),
+    legend({'soc_{single}', 'soc_{add}', 'soc_{base}', ...
+            'soc_{peak}', 'soc_{aim}'}, 'Location', 'NorthWest'),
     ylabel('SOC')
     xlabel('Time')
     grid on, axis tight
