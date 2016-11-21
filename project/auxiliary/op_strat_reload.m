@@ -58,8 +58,6 @@ tau_base = time_to_aim(e_base, e_base_max, p_base_max, soc_aim);
 
 powers = repmat((tau_peak < tau_base), 1, 3).*standard_operation() +  ...
          repmat((tau_peak >= tau_base), 1, 3).*synchronized_operation();
-% powers = 1*standard_operation() +  ...
-%          0.*synchronized_operation();
 
 p_base = powers(:,1);
 p_peak = powers(:,2);
@@ -91,9 +89,22 @@ p_diff = powers(:,3);
         cut = p_base_max/(p_base_max + p_peak_max);
 
         % Double assign peak in case base energy is already at min/max
-        peak = -(1 - cut)*p_in.*(e_peak < e_peak_max & e_peak > 0);
-        base = (- p_in - peak).*(e_base < e_base_max & e_base > 0);
-        peak = (- p_in - base).*(e_peak < e_peak_max & e_peak > 0);
+        % Extend min/max saturation depending on signal sign
+        % TODO: refactor
+        peak = -(1 - cut)*p_in;
+        condpeakneg = sign(peak) < 0 & e_peak < e_peak_max;
+        condpeakpos = sign(peak) > 0 & e_peak > 0;
+        peak = peak.*(condpeakneg | condpeakpos);
+
+        base = (-p_in - peak);
+        condbaseneg = sign(base) < 0 & e_base < e_base_max;
+        condbasepos = sign(base) > 0 & e_base > 0;
+        base = base.*(condbaseneg | condbasepos);
+
+        peak = (-p_in - base);
+        condpeakneg = sign(peak) < 0 & e_peak < e_peak_max;
+        condpeakpos = sign(peak) > 0 & e_peak > 0;
+        peak = peak.*(condpeakneg | condpeakpos);
 
         diffp = - p_in - base - peak;
 

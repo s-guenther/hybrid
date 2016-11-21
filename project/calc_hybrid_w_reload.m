@@ -65,7 +65,7 @@ reversed.fcn = mirrorx(reverse(signal.fcn, period));
                      [0 period], 0, ode_opt);
 
 % check validity
-assert(all(abs([ypos(end), yneg(end)]) < 1e-2), ...
+assert(all(abs([ypos(end), yneg(end)]) < 5e-1), ...
        'Unable to meet decay end condition - impossible storage config');
 
 % determine maximum peak storage size
@@ -78,28 +78,8 @@ base.energy = ssingle.energy - peak.energy;
 base.power = p_base_max;
 
 
-
-% FIXME delete soon
-% 
-% intneg = @(t) interp1(tneg, yneg, t, 'spline');
-% revintneg = reverse(intneg, 2*pi)
-% 
-% % construct soc predictor
-% fw_decay = @(t) interp1(tpos, ypos, t, 'spline');
-% rev_bw_decay = @(t) interp1(tneg, yneg, t, 'spline');
-% bw_decay = reverse(rev_bw_decay, period);
-% soc = ideal_predictor(fw_decay, bw_decay);
-%     
-% tpos = linspace(0, period, 1e3);
-% figure
-% plot(tpos, signal.fcn(tpos), tpos, build(tpos), tpos, fw_decay(tpos), ...
-%      tpos, bw_decay(tpos), tpos, soc(tpos))
-% grid on
-% 
-% /FIXME
-
-
 % plot if output true, for this, simulated with correct strategy before
+% TODO refactor and exclude in separate function
 if output
     % Solve system with real strategy
     storage_info.e_base = base.energy;
@@ -154,7 +134,7 @@ if output
     bw_soc = @(t) bw_decay(t)/peak.energy;
     % .. and for single storage
     [tsingle, ysingle] = ode45(@(t,y) signal.fcn(t), [0, signal.period], 0, ...
-                               ode_opt)
+                               ode_opt);
     intsig = @(t) interp1(tsingle, ysingle, t, 'spline');
     intadd = y(:,1) + y(:,2);
     socsig = @(t) intsig(t)/ssingle.energy;
