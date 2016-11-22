@@ -68,6 +68,8 @@ for ii = 1:length(cut_off_vector)
 
     [base, peak] = calc_hybrid_storage(signal, cut_off, ...
                                        inter, calc_max_step);
+    base.energy = ssingle.energy - peak.energy;
+    base.power = ssingle.power - peak.power;
 
     [re_base, re_peak] = calc_hybrid_w_reload(signal, cut_off, ...
                                               inter, calc_max_step);
@@ -83,10 +85,10 @@ for ii = 1:length(cut_off_vector)
 
     e_tol_achieved = abs((hybrid.energy - ssingle.energy)/ssingle.energy);
     p_tol_achieved = abs((hybrid.power - ssingle.power)/ssingle.power);
-%     assert(e_tol_achieved < calc_max_tol, ...
-%            'Hybrid Energy mismatches Single Storage Energy')
-%     assert(p_tol_achieved < calc_max_tol, ...
-%            'Hybrid power mismatches Single Storage power')
+    assert(e_tol_achieved < calc_max_tol, ...
+           'Hybrid Energy mismatches Single Storage Energy')
+    assert(p_tol_achieved < calc_max_tol, ...
+           'Hybrid power mismatches Single Storage power')
 
     reload.energy = re_base.energy + re_peak.energy;
     reload.power = re_base.power + re_peak.power;

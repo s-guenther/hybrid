@@ -43,7 +43,7 @@ function [signal, seed] = rand_signal(seed, roughness, ...
 
 if nargin < 1 || strcmpi(seed, 'shuffle')
     rng('shuffle', 'twister');
-    seed = randi(2^32-1);
+    seed = randi(9e6);
 end
 
 % initialize random generator
