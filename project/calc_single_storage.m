@@ -13,7 +13,7 @@ if nargin < 2
 end
 
 p = signal.amplitude;
-[~, y] = ode23s(@(t,y) signal.fcn(t), [0 signal.period], 0, ...
+[~, y] = ode45(@(t,y) signal.fcn(t), [0 signal.period], 0, ...
                odeset('MaxStep', MaxStep));
 e = max(y) - min(y);
 

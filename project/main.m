@@ -26,6 +26,7 @@ function out = main(signal, inter, calc_max_step, calc_max_tol, cut_off_vector)
 %       .single         .energy, .power of single storage (minimum)
 %       .hybrid_table   [cut_off | base.energy | peak.energy | ...
 %                        base.power | peak.power]
+%       .reload_table   as hybrid table, with reloading strategy
 %       .parameter      [form, crest, rms, arv, amv]
 %       .transformed    rotated and normed (x,y) value pairs
 %       .peak           (x,y) peak of transformed data (interpolated)
@@ -53,25 +54,49 @@ end
 
 
 % Calculate single storage properties
-[ssingle.energy, ssingle.power] = calc_single_storage(signal);
+[ssingle.energy, ssingle.power] = calc_single_storage(signal, calc_max_step);
 
 
 % Header of hybrid_table (preallocated two lines below):
 % cut_off | base.energy | peak.energy | base.power | peak.power
+% Header reload table
+% cut_off | base.energy | peak.energy | base.power | peak.power
 hybrid_table = [cut_off_vector, zeros(length(cut_off_vector), 4)];
+reload_table = [cut_off_vector, zeros(length(cut_off_vector), 4)];
 for ii = 1:length(cut_off_vector)
     cut_off = cut_off_vector(ii);
-    [base, peak] = calc_hybrid_storage(signal, cut_off, inter, calc_max_step);
+
+    [base, peak] = calc_hybrid_storage(signal, cut_off, ...
+                                       inter, calc_max_step);
+    base.energy = ssingle.energy - peak.energy;
+    base.power = ssingle.power - peak.power;
+
+    [re_base, re_peak] = calc_hybrid_w_reload(signal, cut_off, ...
+                                              inter, calc_max_step);
     hybrid_table(ii,:) = [cut_off, ...
                           base.energy, peak.energy, ...
                           base.power, peak.power];
+    reload_table(ii,:) = [cut_off, ...
+                          re_base.energy, re_peak.energy, ...
+                          re_base.power, re_peak.power];
+
     hybrid.energy = base.energy + peak.energy;
     hybrid.power = base.power + peak.power;
+
     e_tol_achieved = abs((hybrid.energy - ssingle.energy)/ssingle.energy);
     p_tol_achieved = abs((hybrid.power - ssingle.power)/ssingle.power);
     assert(e_tol_achieved < calc_max_tol, ...
            'Hybrid Energy mismatches Single Storage Energy')
     assert(p_tol_achieved < calc_max_tol, ...
+           'Hybrid power mismatches Single Storage power')
+
+    reload.energy = re_base.energy + re_peak.energy;
+    reload.power = re_base.power + re_peak.power;
+    re_e_tol_achieved = abs((reload.energy - ssingle.energy)/ssingle.energy);
+    re_p_tol_achieved = abs((reload.power - ssingle.power)/ssingle.power);
+    assert(re_e_tol_achieved < calc_max_tol, ...
+           'Hybrid Energy mismatches Single Storage Energy')
+    assert(re_p_tol_achieved < calc_max_tol, ...
            'Hybrid power mismatches Single Storage power')
 end
 
@@ -79,6 +104,7 @@ end
 % Gather output
 out.single = ssingle;
 out.hybrid_table = hybrid_table;
+out.reload_table = reload_table;
 out.parameter = signal_parameters(signal);
 out = transform_and_peak(out);
 out = add_theo_peak(out);
