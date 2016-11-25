@@ -1,6 +1,6 @@
-function [base, peak] = calc_hybrid_w_reload(signal, p_cut_ratio, ...
-                                             inter, max_step, rel_tol, output)
-% CALC_HYBRID_W_RELOAD simulation w/ inter storage power flow
+function [base, peak] = calc_hybrid_wo_reload(signal, p_cut_ratio, ...
+                                              inter, max_step, rel_tol, output)
+% CALC_HYBRID_WO_RELOAD simulation w/ inter storage power flow
 %
 % Calculates for a point symmetric input signal and a given power ratio the
 % energy and power of the peak and base storage, considering inter storage
@@ -53,14 +53,14 @@ p_base_max = signal.amplitude*p_cut_ratio;
 p_peak_max = signal.amplitude*(1 - p_cut_ratio);
 
 % integrate positive part of signal
-[build, decay] = build_decay_generator(signal, p_base_max);
+[build, decay] = build_no_reload_decay(signal, p_base_max);
 [tpos, ypos] = ode45(@(t,y) switched_decay_ode(t, y, build, decay), ...
                      [0 period], 0, ode_opt);
 
 % integrate negative part of signal
 reversed = signal;
 reversed.fcn = mirrorx(reverse(signal.fcn, period));
-[revbuild, revdecay] = build_decay_generator(reversed, p_base_max);
+[revbuild, revdecay] = build_no_reload_decay(reversed, p_base_max);
 [tneg, yneg] = ode45(@(t,y) switched_decay_ode(t, y, revbuild, revdecay), ...
                      [0 period], 0, ode_opt);
 
@@ -69,8 +69,10 @@ assert(all(abs([ypos(end), yneg(end)]) < 5e-1), ...
        'Unable to meet decay end condition - impossible storage config');
 
 % determine maximum peak storage size
-peak.energy = max(max(ypos), max(yneg));
-peak.power = p_peak_max;
+peaksignal.fcn = build;
+peaksignal.period = signal.period;
+peaksignal.amplitude = p_peak_max;
+[peak.energy peak.power] = calc_single_storage(peaksignal, max_step);
 
 % To determine base, calc single and substract peak
 [ssingle.energy, ssingle.power] = calc_single_storage(signal, max_step);
@@ -78,7 +80,7 @@ base.energy = ssingle.energy - peak.energy;
 base.power = p_base_max;
 
 
-% plot if output true, for this, simulated with correct strategy before
+% plot if output true, for this, simulate with correct strategy before
 % TODO refactor and exclude in separate function
 if output
     % Solve system with real strategy
@@ -95,13 +97,13 @@ if output
 
     p_in = signal.fcn;
     p_base = @(t, p_in, e_base, e_peak) ...
-             nth_output(1, @op_strat_reload, t, p_in, e_base, e_peak, ...
+             nth_output(1, @op_strat_no_reload, t, p_in, e_base, e_peak, ...
                         soc_fcn, storage_info, signal);
     p_peak = @(t, p_in, e_base, e_peak) ...
-             nth_output(2, @op_strat_reload, t, p_in, e_base, e_peak, ...
+             nth_output(2, @op_strat_no_reload, t, p_in, e_base, e_peak, ...
                         soc_fcn, storage_info, signal);
     p_diff = @(t, p_in, e_base, e_peak) ...
-             nth_output(3, @op_strat_reload, t, p_in, e_base, e_peak, ...
+             nth_output(3, @op_strat_no_reload, t, p_in, e_base, e_peak, ...
                         soc_fcn, storage_info, signal);
 
     % Define storage odes

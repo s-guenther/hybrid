@@ -1,0 +1,62 @@
+function dydt = switched_decay_ode(t, y, ...
+                                   build_fcn, decay_fcn, ...
+                                   build_cond, decay_cond)
+% SWITCHED_DECAY_ODE integrates build or decay fcn depending on build cond.
+%
+% ODE where build_fcn is integrated if build_cond holds true and decay_fcn
+% is integrated if decay_cond holds true.
+% Default behaviour: integrate build fcn if it is positive, recuce integral
+% with decay fcn else
+%
+% Input:
+%   t           ode input arg time
+%   y           ode input arg state
+%   build_fcn   fcn handle, will be integrated if build_cond is true,
+%               function of t
+%   decay_fcn   fcn handle, will be integrated if decay_cond is true,
+%               function of t
+%   build_cond  optional, default: see below; 
+%               fcn handle, logical expression controlling build fcn,
+%               function of t, y, build_val, decay_val
+%   decay_cond  optional, default: see below; 
+%               fcn handle, logical expression controlling decay fcn,
+%               function of t, y, build_val, decay_val
+% Output:
+%   dydt        ode output arg derivative state
+%
+% default build_cond: true if build >= 0, 
+% default decay_cond: true if build_cond == 0 & y > 0 & decay < 0
+% 
+% It is intended that only a maximum of one condition holds true. It is
+% possible to formulate conditions where both can be true. Then, the build
+% and decay will be superpositioned.
+%
+% Code is vectorized.
+%
+% If function is called w/o parameters, the build and decay function will
+% be returned as a cell array of strings. These can be evaluated with
+% build_cond = eval(out{1})     and     decay_cond = eval(out{2})
+
+if nargin == 0
+    dydt = {'@(t, y, build_val, decay_val) build_val >= 0;';
+            '@(t, y, build_val, decay_val) build_val <= 0 & y > 0 & decay_val <= 0;'};
+    return
+end
+
+if nargin < 5
+    build_cond = @(t, y, build_val, decay_val) build_val > 0;
+end
+if nargin < 6
+    decay_cond = @(t, y, build_val, decay_val) build_val <= 0 & ...
+                                               y > 0 & ...
+                                               decay_val <= 0;
+end
+
+build_val = build_fcn(t);
+decay_val = decay_fcn(t);
+build_bool = build_cond(t, y, build_val, decay_val);
+decay_bool = decay_cond(t, y, build_val, decay_val);
+
+dydt = build_val.*build_bool + decay_val.*decay_bool;
+
+end
