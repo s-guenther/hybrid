@@ -13,10 +13,10 @@ function out = main(signal, inter, calc_max_step, calc_max_tol, cut_off_vector)
 %                   0.. original boundary of leaf
 %                   1.. single storage e/p iso time line
 %   calc_max_step   maximum integration step size
-%                   optional, default 1e-2
+%                   optional, default 1e-1
 %   calc_max_tol    maximum allowed tolerance between hybrid and single
 %                   solution before error is thrown
-%                   optional, default 1e-2
+%                   optional, default 1e-1
 %   cut_off_vector  rel power sampling points
 %                   optional, default nonuniformly spaced vector w/ 11 ele
 %   
@@ -42,10 +42,10 @@ if nargin < 2
     inter = 0;
 end
 if nargin < 3
-    calc_max_step = 1e-2;
+    calc_max_step = 1e-1;
 end
 if nargin < 4
-    calc_max_tol = 1e-2;
+    calc_max_tol = 1e-1;
 end
 if nargin < 5
     cut_off_fcn = @(x) x - 0.12*sin(2*pi*x);
@@ -66,8 +66,8 @@ reload_table = [cut_off_vector, zeros(length(cut_off_vector), 4)];
 for ii = 1:length(cut_off_vector)
     cut_off = cut_off_vector(ii);
 
-    [base, peak] = calc_hybrid_storage(signal, cut_off, ...
-                                       inter, calc_max_step);
+    [base, peak] = calc_hybrid_wo_reload(signal, cut_off, ...
+                                         inter, calc_max_step);
     base.energy = ssingle.energy - peak.energy;
     base.power = ssingle.power - peak.power;
 

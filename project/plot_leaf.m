@@ -27,15 +27,32 @@ end
 hfig = figure(figno);
 clf, hold on, grid on
 
-plot(sim_results.hybrid_table(:,2), sim_results.hybrid_table(:,4), 'gx-')
-plot(sim_results.hybrid_table(:,3), sim_results.hybrid_table(:,5), 'rx-')
+% Interpolate results
+base = @(x) interp1(sim_results.hybrid_table(:,2), ...
+                    sim_results.hybrid_table(:,4), ...
+                    x, 'linear');
+peak = @(x) interp1(sim_results.hybrid_table(:,3), ...
+                    sim_results.hybrid_table(:,5), ...
+                    x, 'linear');
 
-plot(sim_results.reload_table(:,2), sim_results.reload_table(:,4), 'go--')
-plot(sim_results.reload_table(:,3), sim_results.reload_table(:,5), 'ro--')
+base_reload = @(x) interp1(sim_results.reload_table(:,2), ...
+                           sim_results.reload_table(:,4), ...
+                           x, 'linear');
+peak_reload = @(x) interp1(sim_results.reload_table(:,3), ...
+                           sim_results.reload_table(:,5), ...
+                           x, 'linear');
 
-xcrossline = [sim_results.hybrid_table(1,2), sim_results.hybrid_table(end,2)];
-ycrossline = [sim_results.hybrid_table(1,4), sim_results.hybrid_table(end,4)];
-plot(xcrossline, ycrossline, 'k:')
+xend = sim_results.hybrid_table(end,2);
+yend = sim_results.hybrid_table(end,4);
+xvec = linspace(0, xend, 1e3);
+
+plot(xvec, base(xvec), 'g--')
+plot(xvec, peak(xvec), 'r--')
+
+plot(xvec, base_reload(xvec), 'g-')
+plot(xvec, peak_reload(xvec), 'r-')
+
+plot([0, xend], [0, yend], 'k:')
 
 % make pretty + additional information
 title(name)

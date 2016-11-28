@@ -69,10 +69,8 @@ assert(all(abs([ypos(end), yneg(end)]) < 5e-1), ...
        'Unable to meet decay end condition - impossible storage config');
 
 % determine maximum peak storage size
-peaksignal.fcn = build;
-peaksignal.period = signal.period;
-peaksignal.amplitude = p_peak_max;
-[peak.energy peak.power] = calc_single_storage(peaksignal, max_step);
+peak.power = p_peak_max;
+peak.energy = max(max(yneg), max(ypos));
 
 % To determine base, calc single and substract peak
 [ssingle.energy, ssingle.power] = calc_single_storage(signal, max_step);
