@@ -15,7 +15,7 @@ function [base, peak, hybrids, noreload, reload, ssingle] = ...
 %                   technologies, default: {'1', '2', ...}
 
 if nargin < 4
-    prices = technologies/min(technologies);
+    prices = sqrt(1 + technologies.^2);
 end
 if nargin < 5
     names = cellfun(@num2str, num2cell(technologies), ...
@@ -66,6 +66,9 @@ for ii = 1:length(storages)
     storages(ii).spec_cost_energy = prices(ii);
     storages(ii).spec_cost_power = prices(ii)/storages(ii).spec_power;
 
+    storages(ii).e_cost_in_own = @(ee) storages(ii).spec_cost_energy*ee;
+    storages(ii).p_cost_in_own = @(pp) storages(ii).spec_cost_power*pp;
+
     storages(ii).e_p_in_own = @(ee) storages(ii).spec_power*ee;
     storages(ii).e_p_in_other = @(ee) power_single - ...
                                 storages(ii).e_p_in_own(energy_single - ee);
@@ -81,12 +84,12 @@ for ii = 1:length(storages)
     end
 
     storages(ii).cut_e_in_base = ...
-        @(cut) fsolve(@(x) storages(ii).e_p_in_base(x) - cut*spec_power_single, ...
+        @(cut) fsolve(@(x) storages(ii).e_p_in_base(x) - cut*power_single, ...
                       ones(size(cut)), optimset('Display', 'off'));
     storages(ii).cut_p_in_base = @(cut) cut*power_single;
 
     storages(ii).cut_e_in_peak = ...
-        @(cut) fsolve(@(x) storages(ii).e_p_in_peak(x) - (1-cut)*spec_power_single, ...
+        @(cut) fsolve(@(x) storages(ii).e_p_in_peak(x) - (1-cut)*power_single, ...
                       ones(size(cut)), optimset('Display', 'off'));
     storages(ii).cut_p_in_peak = @(cut) (1-cut)*power_single;
 
@@ -119,9 +122,9 @@ base = [];
 peak = [];
 for ii = 1:length(storages)
     if strcmpi(storages(ii).type, 'base')
-        base = [base; storages(ii)]; %#ok
+        base = [base; storages(ii)]; %#ok (disable mlint msg)
     else
-        peak = [peak; storages(ii)]; %#ok
+        peak = [peak; storages(ii)]; %#ok (disable mlint msg)
     end
 end
  
@@ -129,7 +132,8 @@ end
 hybrids = cell(length(base), length(peak));
 for ibase = 1:length(base)
     for ipeak = 1:length(peak)
-        hybrids{ibase, ipeak} = calc_eco_combination(base(ibase), peak(ipeak), reload);
+        hybrids{ibase, ipeak} = ...
+            calc_eco_combination(base(ibase), peak(ipeak), reload);
     end
 end
 

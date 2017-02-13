@@ -23,7 +23,7 @@ end
  
 % plot peak storages
 peakcolors = autumn(length(peak));
-for ii = 1:length(base)
+for ii = 1:length(peak)
     plot(evec, peak(ii).e_p_in_base(evec), 'Color', peakcolors(ii,:))
 end
 
