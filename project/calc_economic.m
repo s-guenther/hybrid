@@ -42,6 +42,10 @@ spec_power_single = power_single/energy_single;
                       'e_p_in_peak', @(x)x, ...
                       'e_p_in_own', @(x)x, ...
                       'e_p_in_other', @(x)x, ...
+                      'p_e_in_base', @(x)x, ...
+                      'p_e_in_peak', @(x)x, ...
+                      'p_e_in_own', @(x)x, ...
+                      'p_e_in_other', @(x)x, ...
                       'cut_e_in_base', @(x)x, ...
                       'cut_p_in_base', @(x)x, ...
                       'cut_e_in_peak', @(x)x, ...
@@ -56,49 +60,58 @@ spec_power_single = power_single/energy_single;
                       'trans_p', @(x)x);
 storages(1:length(technologies)) = emptystruct;
 
+trans_e = @(ee) energy_single - ee;
+trans_p = @(pp) power_single - pp; 
 %% Populate
 for ii = 1:length(storages)
-    storages(ii).trans_e = @(e) energy_single - e;
-    storages(ii).trans_p = @(p) power_single - p; 
+    storages(ii).trans_e = @(ee) trans_e(ee);
+    storages(ii).trans_p = @(pp) trans_p(pp);
 
     storages(ii).name = names(ii);
     storages(ii).spec_power = technologies(ii);
     storages(ii).spec_cost_energy = prices(ii);
     storages(ii).spec_cost_power = prices(ii)/storages(ii).spec_power;
+    if storages(ii).spec_power <= spec_power_single
+        storages(ii).type = 'base';
+    else
+        storages(ii).type = 'peak';
+    end
 
     storages(ii).e_cost_in_own = @(ee) storages(ii).spec_cost_energy*ee;
     storages(ii).p_cost_in_own = @(pp) storages(ii).spec_cost_power*pp;
 
     storages(ii).e_p_in_own = @(ee) storages(ii).spec_power*ee;
-    storages(ii).e_p_in_other = @(ee) power_single - ...
-                                storages(ii).e_p_in_own(energy_single - ee);
+    storages(ii).p_e_in_own = @(pp) 1/storages(ii).spec_power*pp;
 
-    if storages(ii).spec_power <= spec_power_single
-        storages(ii).type = 'base';
-        storages(ii).e_p_in_base = @(ee) storages(ii).e_p_in_own(ee);
-        storages(ii).e_p_in_peak = @(ee) storages(ii).e_p_in_other(ee);
-    else
-        storages(ii).type = 'peak';
-        storages(ii).e_p_in_peak = @(ee) storages(ii).e_p_in_own(ee);
-        storages(ii).e_p_in_base = @(ee) storages(ii).e_p_in_other(ee);
-    end
+    storages(ii).e_p_in_other = @(ee) ...
+                                trans_p(storages(ii).e_p_in_own(trans_e(ee)));
+    storages(ii).p_e_in_other = @(pp) ...
+                                trans_e(storages(ii).p_e_in_own(trans_p(pp)));
 
-    storages(ii).cut_e_in_base = ...
-        @(cut) fsolve(@(x) storages(ii).e_p_in_base(x) - cut*power_single, ...
-                      ones(size(cut)), optimset('Display', 'off'));
     storages(ii).cut_p_in_base = @(cut) cut*power_single;
-
-    storages(ii).cut_e_in_peak = ...
-        @(cut) fsolve(@(x) storages(ii).e_p_in_peak(x) - (1-cut)*power_single, ...
-                      ones(size(cut)), optimset('Display', 'off'));
     storages(ii).cut_p_in_peak = @(cut) (1-cut)*power_single;
-
     if strcmp(storages(ii).type, 'base')
+        storages(ii).e_p_in_base = @(ee) storages(ii).e_p_in_own(ee);
+        storages(ii).p_e_in_base = @(pp) storages(ii).p_e_in_own(pp);
+        storages(ii).e_p_in_peak = @(ee) storages(ii).e_p_in_other(ee);
+        storages(ii).p_e_in_peak = @(pp) storages(ii).p_e_in_other(pp);
+        storages(ii).cut_e_in_base = ...
+            @(cut) storages(ii).p_e_in_own(storages(ii).cut_p_in_base(cut));
+        storages(ii).cut_e_in_peak = ...
+            @(cut) storages(ii).p_e_in_other(storages(ii).cut_p_in_base(cut));
         storages(ii).cut_e_in_own = @(cut) storages(ii).cut_e_in_base(cut);
         storages(ii).cut_p_in_own = @(cut) storages(ii).cut_p_in_base(cut);
         storages(ii).cut_e_in_other = @(cut) storages(ii).cut_e_in_peak(cut);
         storages(ii).cut_p_in_other = @(cut) storages(ii).cut_p_in_peak(cut);
     elseif strcmp(storages(ii).type, 'peak')
+        storages(ii).e_p_in_peak = @(ee) storages(ii).e_p_in_own(ee);
+        storages(ii).p_e_in_peak = @(pp) storages(ii).p_e_in_own(pp);
+        storages(ii).e_p_in_base = @(ee) storages(ii).e_p_in_other(ee);
+        storages(ii).p_e_in_base = @(pp) storages(ii).p_e_in_other(pp);
+        storages(ii).cut_e_in_base = ...
+            @(cut) storages(ii).p_e_in_other(storages(ii).cut_p_in_base(cut));
+        storages(ii).cut_e_in_peak = ...
+            @(cut) storages(ii).p_e_in_own(storages(ii).cut_p_in_base(cut));
         storages(ii).cut_e_in_own = @(cut) storages(ii).cut_e_in_peak(cut);
         storages(ii).cut_p_in_own = @(cut) storages(ii).cut_p_in_peak(cut);
         storages(ii).cut_e_in_other = @(cut) storages(ii).cut_e_in_base(cut);
@@ -110,8 +123,16 @@ for ii = 1:length(storages)
 end
 
 % Construct Function handles for curves and single storage
-noreload = @(ee) interp1(no_reload(:,1), no_reload(:,2), ee, 'linear', 'extrap');
-reload = @(ee) interp1(reload(:,1), reload(:,2), ee, 'linear', 'extrap');
+noreload.e_p_in_base = @(ee) interp1(no_reload(:,1), no_reload(:,2), ee, 'linear', 'extrap');
+noreload.e_p_in_peak = @(ee) trans_p(noreload.e_p_in_base(trans_e(ee)));
+noreload.p_e_in_base = @(pp) interp1(no_reload(:,2), no_reload(:,1), pp, 'linear', 'extrap');
+noreload.p_e_in_peak = @(pp) trans_e(noreload.p_e_in_base(trans_p(pp)));
+
+freload.e_p_in_base = @(ee) interp1(reload(:,1), reload(:,2), ee, 'linear', 'extrap');
+freload.e_p_in_peak = @(ee) trans_p(freload.e_p_in_base(trans_e(ee)));
+freload.p_e_in_base = @(pp) interp1(reload(:,2), reload(:,1), pp, 'linear', 'extrap');
+freload.p_e_in_peak = @(pp) trans_e(freload.p_e_in_base(trans_p(pp)));
+reload = freload;
 ssingle = @(ee) interp1([0 energy_single], [0 power_single], ...
                           ee, 'linear', 'extrap');
 

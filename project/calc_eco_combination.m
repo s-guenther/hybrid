@@ -7,7 +7,7 @@ function hybrid = calc_eco_combination(base, peak, hcurve)
 % Input:
 %   base        struct from calc_economic()
 %   peak        as base
-%   hcurve      fhandle for hybridisation curve (reload or no reload)
+%   hcurve      struct from calc_economic()
 % Output:
 %   hybrid      struct
 %       .powers     [base peak both]
@@ -18,8 +18,7 @@ function hybrid = calc_eco_combination(base, peak, hcurve)
 ebvirt = @(cut) base.cut_e_in_base(cut);
 epvirt = @(cut) peak.cut_e_in_base(cut);
 pcut = @(cut) base.cut_p_in_base(cut);
-ehvirt = @(cut) fsolve(@(x) hcurve(x) - pcut(cut), ones(size(cut)), ...
-                            optimset('Display', 'off'));
+ehvirt = @(cut) hcurve.p_e_in_base(pcut(cut));
 
 ebase = @(cut) min(epvirt(cut), ehvirt(cut)) ...
                     .*(ebvirt(cut) < min(epvirt(cut), ehvirt(cut))) + ...

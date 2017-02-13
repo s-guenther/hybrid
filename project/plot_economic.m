@@ -12,8 +12,8 @@ evec = linspace(0, energy_single);
 
 % single and hybridisation curve
 plot(evec, ssingle(evec), ':', 'Color', [0, 0, 0])
-plot(evec, noreload(evec), '--', 'Color', [0, 0, 0])
-plot(evec, reload(evec),  'Color', [0, 0, 0])
+plot(evec, noreload.e_p_in_base(evec), '--', 'Color', [0, 0, 0])
+plot(evec, reload.e_p_in_base(evec), 'Color', [0, 0, 0])
 
 % plot base storages
 basecolors = winter(length(base));
