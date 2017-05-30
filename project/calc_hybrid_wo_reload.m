@@ -53,14 +53,14 @@ p_base_max = signal.amplitude*p_cut_ratio;
 p_peak_max = signal.amplitude*(1 - p_cut_ratio);
 
 % integrate positive part of signal
-[build, decay] = build_no_reload_decay(signal, p_base_max);
+[build, decay] = build_no_reload_decay(signal, p_cut_ratio);
 [tpos, ypos] = ode45(@(t,y) switched_decay_ode(t, y, build, decay), ...
                      [0 period], 0, ode_opt);
 
 % integrate negative part of signal
 reversed = signal;
 reversed.fcn = mirrorx(reverse(signal.fcn, period));
-[revbuild, revdecay] = build_no_reload_decay(reversed, p_base_max);
+[revbuild, revdecay] = build_no_reload_decay(reversed, p_cut_ratio);
 [tneg, yneg] = ode45(@(t,y) switched_decay_ode(t, y, revbuild, revdecay), ...
                      [0 period], 0, ode_opt);
 

@@ -24,7 +24,9 @@ if nargin < 3
     cut_minus = -cut_plus;
 end
 
-build = @(t) residual_saturate(signal.fcn(t), cut_plus, cut_minus);
+build = @(t) residual_saturate(signal.fcn(t), ...
+                               cut_plus*signal.amplitude, ...
+                               cut_minus*signal.amplitude);
 
 request = -(1 - cut_plus)*signal.amplitude;
 request_limit = @(t) signal.fcn(t);

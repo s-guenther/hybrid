@@ -42,7 +42,7 @@ if nargin < 2
     inter = 0;
 end
 if nargin < 3
-    calc_max_step = 1e-1;
+    calc_max_step = signal.period/1e2;
 end
 if nargin < 4
     calc_max_tol = 1e-1;

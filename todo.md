@@ -33,7 +33,7 @@ General scientific work
 - optimize operational strategy, since it leads to useless interstorage
   charging
 
-- mark technology and economic optimal point, analize results
+- mark technology and economic optimal point, analyze results
 
 - equivalent stress hypothesis <--> equivalant load hypothesis
 
@@ -44,3 +44,5 @@ General scientific work
   investigations and simulations needed for details. Tools should provide
   results which are tangible for humans and general for all applications and
   not as abstract as generic optimizations.
+
+- Power-Energy-Spectrogram

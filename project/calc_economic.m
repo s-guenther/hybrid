@@ -1,5 +1,4 @@
-function [base, peak, hybrids, noreload, reload, ssingle] = ...
-            calc_economic(reload, no_reload, technologies, prices, names)
+function out = calc_economic(reload, no_reload, technologies, prices, names)
 % CALC_ECONOMIC calculates overdim and costs for specific technologies
 %
 % Investigates the hybridisation line with specific technologies and
@@ -15,7 +14,7 @@ function [base, peak, hybrids, noreload, reload, ssingle] = ...
 %                   technologies, default: {'1', '2', ...}
 
 if nargin < 4
-    prices = sqrt(1 + technologies.^2);
+    prices = (1 + technologies);
 end
 if nargin < 5
     names = cellfun(@num2str, num2cell(technologies), ...
@@ -158,6 +157,11 @@ for ibase = 1:length(base)
     end
 end
 
-
+out.base = base;
+out.peak = peak;
+out.hybrids = hybrids;
+out.noreload = noreload;
+out.reload = reload;
+out.single = ssingle;
 
 end
