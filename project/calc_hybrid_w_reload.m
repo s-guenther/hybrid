@@ -16,6 +16,7 @@ function [base, peak] = calc_hybrid_w_reload(signal, p_cut_ratio, ...
 %                   0.. maximum possible reload strategy
 %                   1.. original boundary of leaf
 %   max_step        optional, default 1e-1, max integration step size
+%   rel_tol         optional, default 1e-5, reletive integration error
 %   output          optional, default 0, if True (arbitrary integer number),
 %                   plot diagram in figure <integer output number>
 %

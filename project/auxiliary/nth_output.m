@@ -6,7 +6,7 @@ function value = nth_output(N, fcn, varargin)
 %
 % Example:
 %   col = nth_output(2, @size, 0)
-%
+
 % From:
 % http://stackoverflow.com/questions/3710466/how-do-i-get-the-second-return-value-from-a-function-without-using-temporary-var
   [value{1:N}] = fcn(varargin{:});
