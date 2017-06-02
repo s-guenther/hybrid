@@ -1,0 +1,3 @@
+function ishybridsetstruct()
+    % TODO
+end
