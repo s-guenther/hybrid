@@ -40,6 +40,7 @@ end
 %% LOCAL FUNCTIONS
 
 % TODO put identical function bodies into one function
+% TODO use 'integral' instead of 'ode'?
 function rms = root_mean_square(signal, opt)
     % RMS implementation for continuous functions/function handles
     squared_fcn = @(t) signal.fcn(t).^2;

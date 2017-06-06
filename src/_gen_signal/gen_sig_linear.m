@@ -1,4 +1,4 @@
-function signal = gen_sig_linear(time, val, opt)
+function signal = gen_sig_linear(time, val, opt) %#ok
 % GEN_SIG_LINEAR specialized fcn of gen_signal for fhandles
 %
 % Generates SIGNAL struct for piecewise linear function input.
@@ -7,17 +7,22 @@ function signal = gen_sig_linear(time, val, opt)
 % pairs describing the function and OPT the options struct obtained from
 % HYBRIDSET.
 %
+% Note: This function inserts zero crossing points into original vector
+% pair.
+%
 % See also GEN_SIGNAL.
 
-signal.type = 'linear';
-signal.time = time;
-signal.val = val;
-signal.period = time(end);
-signal.amplitude = max(abs(val));
-signal.maxint = max(cumtrapz(time, val));
+[tt, xx] = add_zero_crossings(time, val);
 
-signal.rms = root_mean_square(signal, opt);
-signal.arv = average_rectified_value(signal, opt);
+signal.type = 'linear';
+signal.time = tt;
+signal.val = xx;
+signal.period = tt(end);
+signal.amplitude = max(abs(xx));
+signal.maxint = max(cumtrapz(tt, xx));
+
+signal.rms = root_mean_square(signal);
+signal.arv = average_rectified_value(signal);
 signal.form = signal.rms/signal.arv;
 signal.crest = signal.amplitude/signal.rms;
 

@@ -32,7 +32,7 @@ function rms = root_mean_square(signal)
     tt = signal.time;
     xx = signal.val;
     TT = signal.period;
-    rms = sqrt(1/TT*xx.^2*[tt; diff(tt)]');
+    rms = sqrt(1/TT*xx.^2*[0; diff(tt)]');
 end
 
 
@@ -41,5 +41,5 @@ function arv = average_rectified_value(signal)
     tt = signal.time;
     xx = signal.val;
     TT = signal.period;
-    arv = 1/TT*abs(xx)*[tt; diff(tt)]';
+    arv = 1/TT*abs(xx)*[0; diff(tt)]';
 end
