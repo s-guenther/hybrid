@@ -43,7 +43,8 @@ function signal = gen_signal(varargin)
 %   It is highly recommended to build the signal structure with the help of
 %   this function as it performs some validation and plausibility checks.
 %
-%   SI units assumed.
+%   SI units assumed. The calculations are dimensionless, the user is
+%   responsible for a consistent set of units.
 %
 %   Examples
 %
@@ -59,28 +60,26 @@ function signal = gen_signal(varargin)
 %
 %   See also HYBRIDSET, HYBRID, SIM_OPERATION, PLOT_HYBRID.
 
-
 [sigtype, opt, in1, in2] = parse_gen_signal_input(varargin);
 
 switch lower(sigtype)
     case 'fhandle'
-        fcn = in1;
-        period = in2;
-        signal = gen_sig_fhandle(fcn, period, opt);
+        gen_sig = @gen_sig_fhandle;
     case 'step'
-        time = in1;
-        val = in2;
-        signal = gen_sig_step(time, val, opt);
+        gen_sig = @gen_sig_step;
     case 'linear'
-        time = in1;
-        val = in2;
-        signal = gen_sig_linear(time, val, opt);
+        gen_sig = @gen_sig_linear;
     otherwise
         error('HYBRID:sig:invalid_input', ...
-              ['The privided signal type ''%s'' is unknown, must be\n', ...
+              ['The provided signal type ''%s'' is unknown, must be\n', ...
                '''fhandle'', ''step'' or ''linear'''], sigtype)
 end
 
-check_signal_validity(signal, opt);
+signal = gen_sig(in1, in2, opt);
+
+[valid, errmsg] = isvalidsignal(signal);
+if ~valid
+    error('HYBRID:sig:invalid_signal', errmsg)
+end
 
 end
