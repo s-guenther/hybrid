@@ -55,7 +55,7 @@ end
 amv = yout(end);
 amv_rel_err = abs(amv)/max(yout);
 minint = min(yout);
-int_minus_rel_err = minint/max(yout);
+int_neg_rel_err = minint/max(yout);
 
 if amv_rel_err > opt.amv_rel_tol
     valid = 0;
@@ -66,13 +66,13 @@ if amv_rel_err > opt.amv_rel_tol
               num2str(opt.amv_rel_tol), '.'];
     return
 end
-if int_minus_rel_err < -opt.int_minus_rel_tol
+if int_neg_rel_err < -opt.int_neg_rel_tol
     valid = 0;
     errmsg = ['Integral drops below zero. (Exceeded tolerance ', ...
               'by a\nfactor of ', ...
-              num2str(abs(int_minus_rel_err)/opt.int_minus_rel_tol), ...
+              num2str(abs(int_neg_rel_err)/opt.int_neg_rel_tol), ...
               '. Allowed tolerance is ', ...
-              num2str(opt.int_minus_rel_tol), '.'];
+              num2str(opt.int_neg_rel_tol), '.'];
     return
 end
 
