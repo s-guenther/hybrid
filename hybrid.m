@@ -1,12 +1,13 @@
 function out = hybrid(varargin)
 % HYBRID calculates the data for the hybridisation diagram
 % 
-%   HYBRID is the main calculation routine of this toolbox. It analzes the
+%   HYBRID is the main calculation routine of this toolbox. It analyzes the
 %   signal with respect to its hybridisation potential and provides data for
 %   the hybridisation diagram.
 %
 %   HYBDATA = HYBRID(SIGNAL, <OPT>) analyzes SIGNAL, using the the options
-%   OPT for calculation.
+%   OPT for calculation. SIGNAL is preferably obtained by the function
+%   GEN_SIGNAL.
 %
 %   OPT is a parameter structure obtained from HYBRIDSET. Important fields
 %   of the OPT struct are 'cut', 'odeparams', 'continuous_solver',
@@ -31,6 +32,10 @@ function out = hybrid(varargin)
 %   Base and peak storage sizes are calculated at discrete points (see
 %   OPT.cut). The function handles are obtained through interpolation
 %   routines.
+%
+%   Results can be visualized with PLOT_HYBRID. By the default
+%   specification of OPT, this is done automatically after the calculation
+%   finished.
 %
 %   Examples
 %       signal = gen_signal(@(t) sin(t) + 0.5*sin(2*t), 2*pi)

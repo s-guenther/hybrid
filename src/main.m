@@ -9,6 +9,12 @@ function hybdata = main(signal, opt)
 % both has a clear main function as well as the possibility to call the
 % main function by the projects name.
 
+if nargin == 0
+    help hybrid;
+    hybdata = NaN;
+    return
+end
+
 if nargin < 2
     opt = hybrisset();
 end
