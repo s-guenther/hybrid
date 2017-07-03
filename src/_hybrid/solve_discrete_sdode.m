@@ -1,25 +1,36 @@
-function [tout, yout] = solve_step_sdode(build, decay, opt)
-% SOLVE_STEP_SDODE specialized SDODE solver for discrete fcns
+function [tout, yout] = solve_discrete_sdode(build, decay, opt)
+% SOLVE_DISCRETE_SDODE specialized SDODE solver for discrete fcns
 %
-% [TOUT, YOUT] = SOLVE_STEP_SDODE(BUILD, DECAY, OPT)
+% [TOUT, YOUT] = SOLVE_DISCRETE_SDODE(BUILD, DECAY, OPT)
 %
 % See also SOLVE_SDODE.
 
-% Allocate result vectors
-tout = zeros(size(build.val));
-yout = zeros(size(build.val));
+% Allocate space for result vectors
+tout = zeros(2*length(build.val), 1);
+yout = zeros(2*length(build.val), 1);
  
-% Initial conditions, integration steps, and ode initialization
-tlast = 0;
-ylast = 0;
-timestep = diff([0; build.val]);
-discrete_ode = @(ii, yy) sdode(ii, yy, build.val, decay.val);
+% Set solvers and other functions or vectors depending on fcn type 'step'
+% or 'linear'
+if strcmpi(build.type, 'step')
+    % virtually add 0 at start to make vector size compatible to 'linear'
+    times = [0; build.val];
+    sdode = @(ii, yy) discrete_sdode(ii, yy, [0; build.val], [0; decay.val]);
+    int_one_step = @int_step_fcn;
+    repair_int = @repair_step_int;
+elseif strcmpi(build.type, 'linear')
+    times = build.val;
+    sdode = @(ii, yy) discrete_sdode(ii, yy, build.val, decay.val);
+    int_one_step = @int_linear_fcn;
+    repair_int = @repair_linear_int;
+end
 
-% second control variable as there may be steps in between original steps
-% in result vector (if peak storage runs empty in between a timestep
-jj = 1;
+
+% second control variable jj introduced as there may be steps in between
+% original steps in result vector (if peak storage runs empty in between a
+% timestep) start at 2 because initial condition is implicitly set to zero
+jj = 2;
 % Loop through integration
-for ii = 1:length(build.val)
+for ii = 2:length(times)
     % allocate new space if needed
     if jj > length(tout)
         tout = [tout; zeros(size(tout))]; %#ok
@@ -27,25 +38,19 @@ for ii = 1:length(build.val)
     end
 
     % naive one-step integration
-    tnew = tlast + timestep(ii);
-    ynew = ylast + discrete_ode(ii, ylast)*timestep(ii);
+    tout(jj) = times(ii);
+    yout(jj) = int_one_step(sdode, ii, tout(jj) - tout(jj-1), yout(jj-1));
 
-    % Write to output if result is fine
-    if ynew >= 0
-        tout(jj) = tnew;
-        yout(jj) = ynew;
-    % Else repair result if integral gets negative
-    else
-        [tinter, yinter] = repair_step(tlast, tnew, ylast, ynew);
+    % Repair result if integral gets negative
+    if yout(jj) < 0
+        [tinter, yinter] = repair_int(tout(jj-1), tout(jj), ...
+                                      yout(jj-1), yout(jj), ...
+                                      sdode(jj-1), sdode(jj));
         tout(jj:jj+1) = tinter;
         yout(jj:jj+1) = yinter;
-        ynew = 0;
         jj = jj + 1;
     end
     jj = jj + 1;
-    tlast = tnew;
-    ylast = ynew;
-
 end
 
 % remove unneccessary allocation
@@ -62,7 +67,8 @@ end
 
 % LOCAL FUNCTIONS
  
-function dydt = sdode(ii, yy, build_vec, decay_vec, build_cond, decay_cond)
+function dydt = discrete_sdode(ii, yy, build_vec, decay_vec, ...
+                               build_cond, decay_cond)
 % SDODE integrates build or decay fcn, discrete implementation
 %
 % ODE where build_fcn is integrated if build_cond holds true and decay_fcn
@@ -128,12 +134,59 @@ dydt = build_val.*build_bool + decay_val.*decay_bool;
 
 end
 
+function yout = int_step_fcn(sdode, ii, tstep, ylast)
+% naive integration of one time step, assuming an input function with
+% constant steps
 
-function [tinter, yinter] = repair_step(t1, t2, y1, y2)
+yout = ylast + sdode(ii, ylast)*tstep;
+
+end
+
+
+function yout = int_linear_fcn(sdode, ii, tstep, ylast)
+% naive integration of one time step, assuming an input function with
+% linear pieces between two points
+
+dy_start = sdode(ii-1, ylast);
+dy_end = sdode(ii, ylast);
+yout = ylast + trapz([0 tstep], [dy_start dy_end]);
+
+end
+
+
+function [tinter, yinter] = repair_step_int(t1, t2, y1, y2, dy1, dy2) %#ok
 % If integration step drops below zero, it is corrected to zero and the
 % point in time where this happens is determined.
 
 tinter = [y1/(y1 - y2); 1]*(t2 - t1) + t1;
+yinter = [0; 0];
+
+end
+
+
+function [tinter, yinter] = repair_linear_int(t1, t2, y1, y2, dy1, dy2) %#ok
+% If integration step drops below zero, it is corrected to zero and the
+% point in time where this happens is determined.
+
+% integral is a quadratically falling equation of the form
+%   y = a*t^2 + b*t + c
+%   y = 0.5*m*t^2 + p1*t + y1
+%   with    m = (p2-p1)/(t2 - t1), 
+%           (p1 & p2) <= 0,
+%           t1 < t2
+
+% coefficients of quadratic equation
+a = 0.5*(dy2 - dy1)/(t2 - t1);
+b = dy1;
+c = y1;
+
+% solve quadratic equation for t
+r = roots(a, b, c);
+% take root which is within t1 and t2
+tmid = r.*(r > t1 & r < t2);
+
+% write output
+tinter = [tmid; t2];
 yinter = [0; 0];
 
 end

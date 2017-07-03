@@ -22,10 +22,8 @@ end
 switch lower(build.type)
     case 'fhandle'
         [tout, yout] = solve_fhandle_sdode(build, decay, opt);
-    case 'step'
-        [tout, yout] = solve_step_sdode(build, decay, opt);
-    case 'linear'
-        [tout, yout] = solve_linear_sdode(build, decay, opt);
+    case {'linear', 'step'}
+        [tout, yout] = solve_discrete_sdode(build, decay, opt);
     otherwise
         error('HYBRID:sig:invalid_input', ...
               ['The provided signal type ''%s'' is unknown, must be\n', ...
