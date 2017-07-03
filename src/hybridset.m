@@ -35,11 +35,17 @@ default = cut(:);
 validate = @(cut) isvector(cut) && all(cut <=1) && all(cut >= 0);
 prsr.addParameter('cut', default, validate);
 
+% Tanh gradient for analytical approximation (speed up ode solver) DEFERRED
+prsr.addParameter('tanh', 0, @isnumeric)
+
 % Average mean value relative tolerance
 prsr.addParameter('amv_rel_tol', 1e-5, @isnumeric);
  
 % Integral Negativity relative tolerance
 prsr.addParameter('int_neg_rel_tol', 1e-5, @isnumeric);
+
+% Integral end condition relativ tolerance
+prsr.addParameter('int_zero_rel_tol', 1e-5, @isnumeric);
 
 % Dismissed power rel tol
 prsr.addParameter('dismissed_power_rel_tol', 1e-5, @isnumeric);

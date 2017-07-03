@@ -1,5 +1,5 @@
 function [xout, yout] = add_zero_crossings(xin, yin)
-% ADD_ZERO_CROSSINGS inserts into vectors zero crossing points
+% ADD_ZERO_CROSSINGS inserts zero crossing points into vectors
 %
 % If between two values of input vectors XIN and YIN the linear
 % interpolation crosses zero, this zero point is inserted within these
