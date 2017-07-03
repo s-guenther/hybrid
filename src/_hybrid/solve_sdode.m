@@ -18,7 +18,7 @@ if nargin < 3
     opt = hybridset();
 end
 
-
+% choose solver depending on type
 switch lower(build.type)
     case 'fhandle'
         [tout, yout] = solve_fhandle_sdode(build, decay, opt);
@@ -35,7 +35,18 @@ assert(abs(yout(end)/max(yout)) < opt.int_zero_rel_tol, ...
        ['Unable to meet decay end condition in SDODE - '
         'impossible storage config']);
 
-sdfcn.time = tout;
-sdfcn.val = yout;
+% write output
+sdfcn.type = build.type;
+sdfcn.amplitude = max(yout);
+sdfcn.period = build.period;
+switch lower(sdfcn.type)
+    case 'fhandle'
+        sdfcn.fcn = @(tt) interp1(tout, yout, tt, opt.interpfcn);
+    case {'linear', 'step'}
+        [tout, yout] = solve_discrete_sdode(build, decay, opt);
+        sdfcn.time = tout;
+        sdfcn.val = yout;
+end
+
 
 end

@@ -51,13 +51,12 @@ flip_sig = flip_signal(signal);
 sdfcn_neg = solve_sdode(flip_build, flip_decay, opt);
 
 % determine max from sdode to determine storage sizes
-peak.energy = max([sdfcn_pos.val; sdfcn_neg.val]);
+peak.energy = max([sdfcn_pos.amplitude; sdfcn_neg.amplitude]);
 base.energy = signal.maxint - peak.energy;
 
 % return backward integral if specified
 if nargout > 2
-    % TODO specify flipping
-    bw_int = flip_signal(tneg, yneg);
+    bw_int = flip_signal(sdfcn_neg);
 end
 
 end

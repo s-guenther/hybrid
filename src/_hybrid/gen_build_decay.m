@@ -41,4 +41,9 @@ switch lower(signal.type)
                '''fhandle'', ''step'' or ''linear''.'])
 end
 
+build.type = signal.type;
+decay.type = signal.type;
+build.period = signal.period;
+decay.period = signal.period;
+
 end

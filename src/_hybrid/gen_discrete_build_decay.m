@@ -14,9 +14,7 @@ if strcmpi(signal.type, 'linear')
                                                   cut*signal.amplitude);
 end
 
-build.type = signal.type;
 build.time = signal.time;
-decay.type = signal.type;
 decay.time = signal.time;
 
 request = -(1 - cut)*signal.amplitude;

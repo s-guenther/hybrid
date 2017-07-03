@@ -15,9 +15,9 @@ prsr.addParameter('discrete_solver', default, validate);
 % Continuous Solver
 default = @ode45;
 validate = @(sol) isa(sol, 'function_handle') && ...
-                  any(validatestring(func2str(sol)), ...
+                  any(validatestring(func2str(sol), ...
                       {'ode23', 'ode45', 'ode15s', 'ode113', ...
-                       'ode23s', 'ode23t', 'ode23tb'});
+                       'ode23s', 'ode23t', 'ode23tb'}));
 prsr.addParameter('continuous_solver', default, validate) 
 
 % Odeset
@@ -27,6 +27,12 @@ prsr.addParameter('odeset', default, validate);
 
 % Optimset
 prsr.addParameter('optimset', optimset(), @isstruct);
+
+% Interpolation Function for continuous results
+default = 'linear';
+validate = @(interp) any(validatestring(interp, ...
+                         {'linear', 'pchip', 'spline'}));
+prsr.addParameter('interpfcn', default, validate)
 
 % Cut
 cut_fcn = @(x) x - 0.12*sin(2*pi*x);

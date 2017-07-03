@@ -17,11 +17,6 @@ if ~opt.tanh
              'implemented at the moment.\nIgnoring option OPT.TANH.'])
 end
 
-build.type = signal.type;
-build.period = signal.period;
-decay.type = signal.type;
-decay.period = signal.period;
-
 request = -(1 - cut)*signal.amplitude;
 if strcmpi(strategy, 'inter')
     request_limit = @(t) (signal.fcn(t) - cut*signal.amplitude);
