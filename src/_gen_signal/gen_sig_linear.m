@@ -8,9 +8,12 @@ function signal = gen_sig_linear(time, val, opt) %#ok
 % HYBRIDSET.
 %
 % Note: This function inserts zero crossing points into original vector
-% pair.
+% pair. This is done to simplify the analytic equations for solving.
 %
 % See also GEN_SIGNAL.
+
+verbose(opt.verbose, 1, ...
+        'Generating signal of type ''step''.')
 
 [tt, xx] = add_zero_crossings(time, val);
 

@@ -14,7 +14,8 @@ yout = zeros(2*length(build.val), 1);
 if strcmpi(build.type, 'step')
     % virtually add 0 at start to make vector size compatible to 'linear'
     times = [0; build.val];
-    sdode = @(ii, yy) discrete_sdode(ii, yy, [0; build.val], [0; decay.val]);
+    sdode = @(ii, yy) discrete_sdode(ii, yy, ...
+                                     [0; build.val], [0; decay.val]);
     int_one_step = @int_step_fcn;
     repair_int = @repair_step_int;
 elseif strcmpi(build.type, 'linear')
@@ -133,6 +134,7 @@ decay_bool = decay_cond(ii, yy, build_val, decay_val);
 dydt = build_val.*build_bool + decay_val.*decay_bool;
 
 end
+
 
 function yout = int_step_fcn(sdode, ii, tstep, ylast)
 % naive integration of one time step, assuming an input function with

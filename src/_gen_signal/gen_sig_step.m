@@ -9,6 +9,9 @@ function signal = gen_sig_step(time, val, opt)
 %
 % See also GEN_SIGNAL.
 
+verbose(opt.verbose, 1, ...
+        'Generating signal of type ''linear''.')
+
 signal.type = 'step';
 signal.time = time;
 signal.val = val;

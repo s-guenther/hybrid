@@ -36,16 +36,24 @@ function [peak, base, bw_int] = hybrid_pair(signal, cut, varargin)
 %
 % See also HYBRID, GEN_SIGNAL, HYBRIDSET, SIM_OPERATION.
 
+% TODO implement shortcut for cut = 1 and cut = 0
+
 [strategy, opt] = parse_hybrid_pair_input(varargin{:});
 
 base.power = signal.amplitude*cut;
 peak.power = signal.amplitude*(1 - cut);
 
 % Evaluate SDODE for positive signal parts
+verbose(opt.verbose, 2, ...
+        ['Solving SDODE for positive signal part for cut = ', ...
+         num2str(cut), ' and strategy = ', strategy '.'])
 [build, decay] = gen_build_decay(signal, cut, strategy, opt);
 sdfcn_pos = solve_sdode(build, decay, opt);
 
 % Evaluate SDODE for negative signal parts
+verbose(opt.verbose, 2, ...
+        ['Solving SDODE for positive signal part for cut = ', ...
+         num2str(cut), ' and strategy = ', strategy, '.'])
 flip_sig = flip_signal(signal);
 [flip_build, flip_decay] = gen_build_decay(flip_sig, cut, strategy, opt);
 sdfcn_neg = solve_sdode(flip_build, flip_decay, opt);

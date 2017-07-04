@@ -13,6 +13,9 @@ function [valid, errmsg] = isvalidsignal(signal, opt)
 %
 % See also GEN_SIGNAL.
 
+verbose(opt.verbose, 1, ...
+        'Validating Signal.')
+
 % Does have all fields in struct?
 commonfields = isfield(signal, ...
                        {'period', 'amplitude', 'maxint', 'rms', 'arv', ...

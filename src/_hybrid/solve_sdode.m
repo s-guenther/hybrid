@@ -41,7 +41,7 @@ sdfcn.amplitude = max(yout);
 sdfcn.period = build.period;
 switch lower(sdfcn.type)
     case 'fhandle'
-        sdfcn.fcn = @(tt) interp1(tout, yout, tt, opt.interpfcn);
+        sdfcn.fcn = @(tt) interp1(tout, yout, tt, opt.interbwint);
     case {'linear', 'step'}
         [tout, yout] = solve_discrete_sdode(build, decay, opt);
         sdfcn.time = tout;

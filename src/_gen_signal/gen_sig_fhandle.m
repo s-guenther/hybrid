@@ -9,26 +9,35 @@ function signal = gen_sig_fhandle(fcn, period, opt)
 %
 % See also GEN_SIGNAL.
 
+verbose(opt.verbose, 1, ...
+        'Generating signal of type ''fhandle''.')
+
 signal.type = 'fhandle';
 signal.fcn = fcn;
 signal.period = period;
 
 % search maximum amplitude with fminbnd
 % TODO test if fminbnd is a good choice and produces valid results
+verbose(opt.verbose, 2, ...
+        'Find maximum amplitude via fminbnd.')
 [~, minamp, foundmin] = fminbnd(fcn, 0, period, opt.optimset);
 [~, maxamp, foundmax] = fminbnd(@(x) -fcn(x), 0, period, opt.optimset);
 if ~foundmin || ~foundmax
     error('HYBRID:sig:fminbnderr', ...
-          'Unable to find amplitude of fcn via fminbnd')
+          'Unable to find amplitude of fcn via fminbnd.')
 end
 signal.amplitude = -min([minamp, maxamp]);
 
 % integrate signal to get energy within signal
 % TODO test if interpolation is neccessary to find maximum
+verbose(opt.verbose, 2, ...
+        'Find max integral via ode integration.')
 odesol = opt.continuous_solver;
 [~, yout] = odesol(@(tt, xx) fcn(tt), [0 period], 0, opt.odeset);
 signal.maxint = max(yout);
 
+verbose(opt.verbose, 2, ...
+        'Calculate Signal parameters rms, arv, form, crest.')
 signal.rms = root_mean_square(signal, opt);
 signal.arv = average_rectified_value(signal, opt);
 signal.form = signal.rms/signal.arv;
