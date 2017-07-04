@@ -70,7 +70,7 @@ hybdata.reload_potential = hybdata.hybrid_potential - ...
                            hybrid_potential(nointer);
 
 if opt.plot_hyb
-    plot_hybrid(hybrid, signal, opt)
+    plot_hybrid(hybrid, signal, opt);
 end
 
 end

@@ -82,4 +82,8 @@ if ~valid
     error('HYBRID:sig:invalid_signal', errmsg)
 end
 
+if opt.plot_sig
+    plot_signal(signal, opt);
+end
+
 end
