@@ -48,7 +48,7 @@ function signal = gen_signal(varargin)
 %
 %   Examples
 %
-%       SIGNAL = GEN_SIGNAL(@(t) sin(t) + 0.5*sin(2*t), 2*pi)
+%       SIGNAL = GEN_SIGNAL(@(t) sin(t) + 0.5*sin(3*t), 2*pi)
 %       SIGNAL = GEN_SIGNAL(@(t) interp1([0 2 4  5  7 9], ...
 %                                        [0 1 3 -3 -1 0], ...
 %                                        mod(t, 9), ...
@@ -60,7 +60,7 @@ function signal = gen_signal(varargin)
 %
 %   See also HYBRIDSET, HYBRID, SIM_OPERATION, PLOT_HYBRID.
 
-[sigtype, opt, in1, in2] = parse_gen_signal_input(varargin);
+[sigtype, opt, in1, in2] = parse_gen_signal_input(varargin{:});
 
 switch lower(sigtype)
     case 'fhandle'
@@ -77,7 +77,7 @@ end
 
 signal = gen_sig(in1, in2, opt);
 
-[valid, errmsg] = isvalidsignal(signal);
+[valid, errmsg] = isvalidsignal(signal, opt);
 if ~valid
     error('HYBRID:sig:invalid_signal', errmsg)
 end

@@ -11,7 +11,7 @@ function hfig = plot_hybrid(hybdata, varargin)
 
 % TODO make pretty and complete
 
-[signal, opt] = parse_plot_hybrid_input(varargin);
+[signal, opt] = parse_plot_hybrid_input(varargin{:});
 
 if ~opt.plot_hyb
     hfig = figure(101);

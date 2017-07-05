@@ -1,10 +1,10 @@
-function valid = ishybridsetstruct(hybstruct)
+function valid = ishybridset(opt)
 % ISHYBRIDSETSTRUCT tests if a struct is a hybridsetstruct
 %
 % TODO add description
 
 % TODO implement
 
-valid = isstruct(hybstruct);
+valid = isstruct(opt);
 
 end

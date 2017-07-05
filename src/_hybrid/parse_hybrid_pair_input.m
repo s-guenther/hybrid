@@ -32,7 +32,8 @@ if nargin == 2
         error('HYBRID:hybrid_pair:invalid_input', ...
               '4th Argument is not a hybridset OPT struct.')
     end
-
+    strategy = varargin{1};
+    opt = varargin{2};
 end
 
 if nargin > 2

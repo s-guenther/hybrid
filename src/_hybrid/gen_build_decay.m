@@ -26,7 +26,7 @@ function [build, decay] = gen_build_decay(signal, cut, varargin)
 %
 % See also HYBRID_PAIR.
 
-[strategy, opt] = parse_hybrid_pair_input(varargin);
+[strategy, opt] = parse_hybrid_pair_input(varargin{:});
 
 switch lower(signal.type)
     case 'fhandle'

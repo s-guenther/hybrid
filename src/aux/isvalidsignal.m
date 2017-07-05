@@ -13,6 +13,10 @@ function [valid, errmsg] = isvalidsignal(signal, opt)
 %
 % See also GEN_SIGNAL.
 
+if nargin < 2
+    opt = hybridset();
+end
+
 verbose(opt.verbose, 1, ...
         'Validating Signal.')
 
@@ -44,7 +48,8 @@ end
  
 switch lower(signal.type)
     case 'fhandle'
-        odesol = opt.odesol;    % TODO use 'integral' instead of 'ode'?
+        % TODO use 'integral' instead of 'ode'?
+        odesol = opt.continuous_solver;    
         [~, yout] = odesol(@(tt, yy) signal.fcn(tt), ...
                            [0 signal.period], ...
                            0, ...

@@ -19,7 +19,7 @@ if nargin == 0
 end
 
 if nargin < 2
-    opt = hybrisset();
+    opt = hybridset();
 end
 
 % Calculate the hybrid storage dimensions for each power cut
@@ -70,7 +70,7 @@ hybdata.reload_potential = hybdata.hybrid_potential - ...
                            hybrid_potential(nointer);
 
 if opt.plot_hyb
-    plot_hybrid(hybrid, signal, opt);
+    plot_hybrid(hybdata, signal, opt);
 end
 
 end

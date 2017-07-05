@@ -31,9 +31,15 @@ switch lower(build.type)
 end
 
 % check validity
-assert(abs(yout(end)/max(yout)) < opt.int_zero_rel_tol, ...
-       ['Unable to meet decay end condition in SDODE - '
-        'impossible storage config']);
+int_zero_rel_err = abs(yout(end)/max(yout));
+if isnan(int_zero_rel_err) % Prevent zero division error
+    int_zero_rel_err = 0;
+end
+assert(int_zero_rel_err < opt.int_zero_rel_tol, ...
+       ['Unable to meet decay end condition in SDODE.\n', ...
+        'Relative error is ', num2str(int_zero_rel_err), ...
+        ', allowed error is ', num2str(opt.int_zero_rel_tol), ...
+        '.\nTry tuning opt.odeset parameters.']);
 
 % write output
 sdfcn.type = build.type;

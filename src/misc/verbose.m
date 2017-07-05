@@ -35,7 +35,7 @@ end
 % Indent two additional spaces for lines proceeding the first line
 if length(messagecell) > 1
     for ii = 2:length(messagecell)
-        messagecell{ii} = [make_n_spaces(2), messagecell{ii}];
+        messagecell{ii} = [make_n_spaces(1), messagecell{ii}];
     end
 end
 

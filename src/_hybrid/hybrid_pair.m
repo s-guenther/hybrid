@@ -1,4 +1,4 @@
-function [peak, base, bw_int] = hybrid_pair(signal, cut, varargin)
+function [base, peak, bw_int] = hybrid_pair(signal, cut, varargin)
 % HYBRID_PAIR calculates peak/base storage pair for signal for specific cut
 %
 % Performs SDODE forward and backward integration and determines the
@@ -46,13 +46,13 @@ peak.power = signal.amplitude*(1 - cut);
 % Evaluate SDODE for positive signal parts
 verbose(opt.verbose, 2, ...
         ['Solving SDODE for positive signal part for cut = ', ...
-         num2str(cut), ' and strategy = ', strategy '.'])
+         num2str(cut), ' and strategy = ''', strategy '''.'])
 [build, decay] = gen_build_decay(signal, cut, strategy, opt);
 sdfcn_pos = solve_sdode(build, decay, opt);
 
 % Evaluate SDODE for negative signal parts
 verbose(opt.verbose, 2, ...
-        ['Solving SDODE for positive signal part for cut = ', ...
+        ['Solving SDODE for negative signal part for cut = ', ...
          num2str(cut), ' and strategy = ', strategy, '.'])
 flip_sig = flip_signal(signal);
 [flip_build, flip_decay] = gen_build_decay(flip_sig, cut, strategy, opt);
