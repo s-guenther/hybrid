@@ -14,7 +14,7 @@ switch lower(signal.type)
         flipped.fcn = @(t) -signal.fcn(signal.period - t);
     case 'linear'
         flipped.val = -flip(signal.val);
-        flipped.time = signal.time(end) - flip(time);
+        flipped.time = signal.time(end) - flip(signal.time);
     case 'step'
         flipped.val = -flip(signal.val);
         flipped.time = [cumsum(flip(diff(signal.time))); signal.time(end)];

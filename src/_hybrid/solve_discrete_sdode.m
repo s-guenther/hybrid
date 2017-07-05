@@ -13,13 +13,13 @@ yout = zeros(2*length(build.val), 1);
 % or 'linear'
 if strcmpi(build.type, 'step')
     % virtually add 0 at start to make vector size compatible to 'linear'
-    times = [0; build.val];
+    times = [0; build.time];
     sdode = @(ii, yy) discrete_sdode(ii, yy, ...
                                      [0; build.val], [0; decay.val]);
     int_one_step = @int_step_fcn;
     repair_int = @repair_step_int;
 elseif strcmpi(build.type, 'linear')
-    times = build.val;
+    times = build.time;
     sdode = @(ii, yy) discrete_sdode(ii, yy, build.val, decay.val);
     int_one_step = @int_linear_fcn;
     repair_int = @repair_linear_int;
@@ -46,7 +46,8 @@ for ii = 2:length(times)
     if yout(jj) < 0
         [tinter, yinter] = repair_int(tout(jj-1), tout(jj), ...
                                       yout(jj-1), yout(jj), ...
-                                      sdode(jj-1), sdode(jj));
+                                      sdode(ii-1, yout(jj-1)), ...
+                                      sdode(ii, yout(jj)));
         tout(jj:jj+1) = tinter;
         yout(jj:jj+1) = yinter;
         jj = jj + 1;
@@ -55,8 +56,8 @@ for ii = 2:length(times)
 end
 
 % remove unneccessary allocation
-tout = tout(jj:end);
-yout = yout(jj:end);
+tout = tout(1:jj-1);
+yout = yout(1:jj-1);
 
 if strcmpi(opt.discrete_solver, 'time_preserving')
     warning('HYBRID:discrete_solver', ...
@@ -183,9 +184,9 @@ b = dy1;
 c = y1;
 
 % solve quadratic equation for t
-r = roots(a, b, c);
+r = roots([a, b, c])+t1;
 % take root which is within t1 and t2
-tmid = r.*(r > t1 & r < t2);
+tmid = r'*(r > t1 & r < t2);
 
 % write output
 tinter = [tmid; t2];

@@ -31,7 +31,7 @@ switch lower(build.type)
 end
 
 % check validity
-int_zero_rel_err = abs(yout(end)/max(yout));
+int_zero_rel_err = abs(yout(end)/build.maxint);
 if isnan(int_zero_rel_err) % Prevent zero division error
     int_zero_rel_err = 0;
 end

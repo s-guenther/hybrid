@@ -45,5 +45,7 @@ build.type = signal.type;
 decay.type = signal.type;
 build.period = signal.period;
 decay.period = signal.period;
+build.maxint = signal.maxint;
+decay.maxint = signal.maxint;
 
 end

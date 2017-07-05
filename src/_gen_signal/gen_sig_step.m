@@ -17,10 +17,10 @@ signal.time = time;
 signal.val = val;
 signal.period = time(end);
 signal.amplitude = max(abs(val));
-signal.maxint = max(cumsum(time, val));
+signal.maxint = max(cumsum(diff([0; time]).*val));
 
-signal.rms = root_mean_square(signal, opt);
-signal.arv = average_rectified_value(signal, opt);
+signal.rms = root_mean_square(signal);
+signal.arv = average_rectified_value(signal);
 signal.form = signal.rms/signal.arv;
 signal.crest = signal.amplitude/signal.rms;
 
@@ -35,7 +35,7 @@ function rms = root_mean_square(signal)
     tt = signal.time;
     xx = signal.val;
     TT = signal.period;
-    rms = sqrt(1/TT*xx.^2*[0; diff(tt)]');
+    rms = sqrt(1/TT*xx'.^2*[0; diff(tt)]);
 end
 
 
@@ -44,5 +44,5 @@ function arv = average_rectified_value(signal)
     tt = signal.time;
     xx = signal.val;
     TT = signal.period;
-    arv = 1/TT*abs(xx)*[0; diff(tt)]';
+    arv = 1/TT*abs(xx')*[0; diff(tt)];
 end

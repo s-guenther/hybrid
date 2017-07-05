@@ -23,17 +23,20 @@ cut = linspace(0, 1, 1e2);
 inter = hybdata.hybrid;
 nointer = hybdata.nointer;
 
+clf
 hold on
-plot(inter.baseenergy(cut), inter.basepower(cut))
-plot(nointer.baseenergy(cut), nointer.basepower(cut), '--')
+plot(inter.baseenergy(cut), inter.basepower(cut), 'k')
+plot(nointer.baseenergy(cut), nointer.basepower(cut), 'k--')
+plot([0 inter.baseenergy(1)], [0 inter.basepower(1)], 'k:')
 
 title('Hybridisation Diagram')
 xlabel('Base Energy E')
-xlabel('Base Power P')
+ylabel('Base Power P')
+axis tight
 
-if ~ischar(signal) && strcmpi(signal, 'none')
-    axes('Position', [.6 .2 .25 .2], 'Visible', 'off');
-    plot(signal, opt);
+if isvalidsignal(signal)
+    axsig = axes('Position', [0.22, 0.58, .25, .25]);
+    plot_signal(signal, opt, axsig);
 end
 
 hold off

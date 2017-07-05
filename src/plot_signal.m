@@ -1,4 +1,4 @@
-function hfig = plot_signal(signal, opt)
+function hfig = plot_signal(signal, opt, ax)
 % PLOT_SIGNAL plots a storage signal struct
 %
 % HFIG = PLOT_SIGNAL(SIGNAL, <OPT>) Plots the signal provided as
@@ -13,27 +13,38 @@ function hfig = plot_signal(signal, opt)
 if nargin < 2
     opt = hybridset();
 end
-
-if ~opt.plot_sig
-    hfig = figure(100);
-else
-    hfig = figure(opt.plot_sig);
+if nargin < 3
+    ax = 'none';
 end
+
+if strcmpi(ax, 'none')
+    if ~opt.plot_sig
+        hfig = figure(100);
+    else
+        hfig = figure(opt.plot_sig);
+    end
+    clf;
+    ax = gca;
+else
+    hfig = gcf;
+end
+hold on
 
 switch lower(signal.type)
     case 'fhandle'
         tt = linspace(0, signal.period, 1e3);
-        plot(tt, signal.fcn(tt))
+        plot(ax, tt, signal.fcn(tt))
     case 'step'
-        stairs([0; signal.time], [signal.val; signal.val(end)]);
+        stairs(ax, [0; signal.time], [signal.val; signal.val(end)]);
     case 'linear'
-        plot(signal.time, signal.val)
+        plot(ax, signal.time, signal.val)
     otherwise
         error('HYBRID:sig:invalid_input', ...
               ['The provided signal type ''%s'' is unknown, must be\n', ...
                '''fhandle'', ''step'' or ''linear'''], sigtype)
 end
 
+axis tight
 title('Time series of Signal')
 xlabel('Time t')
 ylabel('Power p')

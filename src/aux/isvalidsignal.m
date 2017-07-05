@@ -29,7 +29,7 @@ switch lower(signal.type)
     case 'fhandle'
         specialfields = isfield(signal, 'fcn');
     case {'step', 'linear'}
-        specialfields = isfield(signal, 'time', 'val');
+        specialfields = isfield(signal, {'time', 'val'});
     otherwise
         error('HYBRID:sig:invalid_input', ...
               ['The provided signal type ''%s'' is unknown, must be\n', ...
@@ -55,7 +55,7 @@ switch lower(signal.type)
                            0, ...
                            opt.odeset);
     case 'step'
-        stepints = [0; diff(signal.time)].*signal.val;
+        stepints = diff([0; signal.time]).*signal.val;
         yout = cumsum(stepints);
     case 'linear'
         yout = cumtrapz(signal.time, signal.val);

@@ -52,9 +52,9 @@ end
 
 %% If 3 inputs, check type of 3rd input and assign opt and sigtype accrdgly
 if nargin == 3
-    if ishybridsetstruct(varargin{3}) && strcmpi(sigtype, 'fhandle')
+    if ishybridset(varargin{3}) && strcmpi(sigtype, 'fhandle')
         opt = varargin{3};
-    elseif ishybridsetstruct(varargin{3}) && strcmpi(sigtype, 'discrete')
+    elseif ishybridset(varargin{3}) && strcmpi(sigtype, 'discrete')
         sigtype = 'step';
         opt = varargin{3};
     elseif ischar(varargin{3})
@@ -75,7 +75,7 @@ if nargin == 4
         error('HYBRID:sig:invalid_input', ...
               '3rd parameter must be a string')
     end
-    if ~ishybridsetstruct(opt)
+    if ~ishybridset(opt)
         error('HYBRID:sig:invalid_input', ...
               '4th parameter must be a hybridset struct')
     end

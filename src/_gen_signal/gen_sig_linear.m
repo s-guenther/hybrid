@@ -47,7 +47,8 @@ function rms = root_mean_square(signal)
     % n = x1 - m*t1
     mm = (xx(2:end) - xx(1:end-1))./(tt(2:end) - tt(1:end-1));
     nn = xx(1:end-1) - mm.*tt(1:end-1);
-    sepints = ((mm*tt(2:end) + nn).^3 - (mm*tt(1:end-1) + nn).^3)./(3*mm);
+    sepints = ((mm.*tt(2:end) + nn).^3 - ...
+               (mm.*tt(1:end-1) + nn).^3)./(3*mm);
     rms = sqrt(1/TT*sum(sepints));
 end
 
@@ -56,7 +57,7 @@ function arv = average_rectified_value(signal)
     % ARV implementation for nonuniform step functions
     % TODO is function correct?
     tt = signal.time;
-    xx = signal.val;
+    xx = abs(signal.val);
     TT = signal.period;
     arv = 1/TT*trapz(tt, xx);
 end
