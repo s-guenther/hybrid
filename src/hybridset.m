@@ -58,8 +58,12 @@ function options = hybridset(varargin)
 %   is interpolated. Default is 'pchip'. Can be 'linear', 'pchip' or
 %   'spline'.
 %
-% tanh - Hyperbolic tangent gradient. This options allows a smoothing of
-%   discontinuities within an input signal of type 'fhandle'. Note that
+% tanh_sim - Hyperbolic tangent gradient. For Smoothing of requested power
+%   of peak storage in control strategy. For numeric stability, only
+%   relevant for continuous signal ('fhandle'). Higher values lead to more
+%   accurate results by increasing the instability, default is 1e3
+% tanh_dim - Hyperbolic tangent gradient. This options allows a smoothing
+%   of discontinuities within an input signal of type 'fhandle'. Note that
 %   this discontinuities emerge inevitably within the power splitting
 %   procedure independent of the input function. This can slow down ode
 %   integration significantly and a tanh approximation at discontinuities
@@ -80,7 +84,7 @@ function options = hybridset(varargin)
 %   sampled at discrete points. This number is the total number of sampling
 %   points within a period. Subsequently, the discrete result is
 %   interpolated again with 'pchip'. This option takes only effect if
-%   option conv is not 0
+%   option conv is not 0.
 %
 % plot_sig - Plot Signal after generation. Must be a positive integer.
 %   Defines the figure in which the result will be plotted after
@@ -148,8 +152,11 @@ default = cut(:);
 validate = @(cut) isvector(cut) && all(cut <=1) && all(cut >= 0);
 prsr.addParameter('cut', default, validate);
 
+% Tanh gradient for simulation of the storages with control strategy
+prsr.addParameter('tanh_sim', 1e3, @isnumeric);
+
 % Tanh gradient for analytical approximation (speed up ode solver) DEFERRED
-prsr.addParameter('tanh', 0, @isnumeric);
+prsr.addParameter('tanh_dim', 0, @isnumeric);
 
 % Convolution core size
 prsr.addParameter('conv', 0, @isnumeric);

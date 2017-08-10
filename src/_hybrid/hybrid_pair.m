@@ -65,6 +65,12 @@ base.energy = signal.maxint - peak.energy;
 % return backward integral if specified
 if nargout > 2
     bw_int = flip_signal(sdfcn_neg);
+    switch lower(bw_int.type)
+        case 'fhandle'
+            bw_int.fcn = @(t) -bw_int.fcn(t);
+        case {'linear', 'step'}
+            bw_int.val = -bw_int.val;
+    end
 end
 
 end

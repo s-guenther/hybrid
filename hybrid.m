@@ -10,7 +10,7 @@ function out = hybrid(varargin)
 %   GEN_SIGNAL.
 %
 %   OPT is a parameter structure obtained from HYBRIDSET. Important fields
-%   of the OPT struct are 'cut', 'odeparams', 'continuous_solver',
+%   of the OPT struct are 'cut', 'odeset', 'continuous_solver',
 %   'discrete_solver', 'plot_hyb'
 %
 %   HYBDATA is a structure with the following form:

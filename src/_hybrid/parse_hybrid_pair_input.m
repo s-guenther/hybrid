@@ -16,7 +16,7 @@ if nargin == 1
     if ishybridset(varargin{1})
         strategy = 'inter';
         opt = varargin{1};
-    elseif strcmpi(varargin{1}, {'inter', 'nointer'})
+    elseif any(strcmpi(varargin{1}, {'inter', 'nointer'}))
         strategy = varargin{1};
         opt = hybridset();
     else
