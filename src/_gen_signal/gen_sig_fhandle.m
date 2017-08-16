@@ -23,10 +23,14 @@ verbose(opt.verbose, 2, ...
 [~, minamp, foundmin] = fminbnd(fcn, 0, period, opt.optimset);
 [~, maxamp, foundmax] = fminbnd(@(x) -fcn(x), 0, period, opt.optimset);
 if ~foundmin || ~foundmax
-    error('HYBRID:sig:fminbnderr', ...
-          'Unable to find amplitude of fcn via fminbnd.')
+    minamp = 0;
+    maxamp = 0;
+    warning('HYBRID:sig:fminbnderr', ...
+            'Unable to find amplitude of fcn via fminbnd.')
 end
-signal.amplitude = -min([minamp, maxamp]);
+% Find maximum amplitude with sampling signal
+maxsample = max(abs(fcn(linspace(0, period, opt.ampl_sample))));
+signal.amplitude = max(maxsample, -min([minamp, maxamp]));
 
 % integrate signal to get energy within signal
 % TODO test if interpolation is neccessary to find maximum

@@ -58,6 +58,9 @@ function options = hybridset(varargin)
 %   is interpolated. Default is 'pchip'. Can be 'linear', 'pchip' or
 %   'spline'.
 %
+% ampl_sample - Sampling points for finding the maximum amplitute, as
+%   finding the maximum with fminbnd may fail. Default 1e5
+%
 % tanh_sim - Hyperbolic tangent gradient. For Smoothing of requested power
 %   of peak storage in control strategy. For numeric stability, only
 %   relevant for continuous signal ('fhandle'). Higher values lead to more
@@ -157,6 +160,9 @@ prsr.addParameter('tanh_sim', 1e3, @isnumeric);
 
 % Tanh gradient for analytical approximation (speed up ode solver) DEFERRED
 prsr.addParameter('tanh_dim', 0, @isnumeric);
+
+% Amplitude searching sampling points
+prsr.addParameter('ampl_sample', 1e5, @(x) x == int32(x));
 
 % Convolution core size
 prsr.addParameter('conv', 0, @isnumeric);
