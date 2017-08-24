@@ -57,6 +57,11 @@ function options = hybridset(varargin)
 %   integration, to subsequently gain a function handle again, this result
 %   is interpolated. Default is 'pchip'. Can be 'linear', 'pchip' or
 %   'spline'.
+% intersim - Interpolation method for the simulation results if signal type
+%   is 'fhandle'. Default is 'spline', can be 'linear', 'spline' or
+%   'pchip'. The simulation results are obtained through numerical
+%   integration, to subsequently gain a function handle again, this result
+%   is interpolated. 
 %
 % ampl_sample - Sampling points for finding the maximum amplitute, as
 %   finding the maximum with fminbnd may fail. Default 1e5
@@ -148,6 +153,12 @@ default = 'pchip';
 validate = @(interp) any(validatestring(interp, ...
                          {'linear', 'pchip', 'spline'}));
 prsr.addParameter('interbwint', default, validate)
+
+% Interpolation for simulation results (if type == 'fhandle')
+default = 'spline';
+validate = @(interp) any(validatestring(interp, ...
+                         {'linear', 'pchip', 'spline'}));
+prsr.addParameter('intersim', default, validate)
 
 % Cut
 cut = [0, 0.15, 0.3, 0.5, 0.75, 1];
