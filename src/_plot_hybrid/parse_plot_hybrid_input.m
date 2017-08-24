@@ -17,7 +17,8 @@ elseif nargin == 1
               'Input does not match signal struct or options struct.')
     end
 elseif nargin == 2
-    if isvalidsignal(varargin{1}) &&ishybridset(varargin{2}) 
+    if isvalidsignal(varargin{1}, varargin{2}) && ...
+       ishybridset(varargin{2}) 
         signal = varargin{1};
         opt = varargin{2};
     else
