@@ -64,9 +64,13 @@ function sim_results = sim_operation(signal, cut, varargin)
 
 [strategy, opt] = parse_hybrid_pair_input(varargin{:});
 
+verbose(opt.verbose, 1, 'Start simulation by dimensioning storages.')
+
 [base, peak, bw_int] = hybrid_pair(signal, cut, strategy, opt);
 
 [control, state] = control_factory(cut, strategy, base, peak, opt);
+
+verbose(opt.verbose, 1, 'Solve control ode.')
 
 switch signal.type
     case 'fhandle'
