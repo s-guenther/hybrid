@@ -31,7 +31,8 @@ function signal = gen_signal(varargin)
 %   'step' or 'linear', default is 'step'.
 %
 %   OPT is a parameter structure obtained from HYBRIDSET. Important fields
-%   of the OPT struct are 'odeparams', 'amv_tol', 'sig_plot'
+%   of the OPT struct with regard to this function are 'odeparams',
+%   'amv_tol', 'plot_sig'.
 %
 %   SIGNAL = GEN_SIGNAL(FHANDLE, PERIOD, <OPT>) where FHANDLE is a function
 %   handle of a periodic function of the form VAL = @(TIME) ... with period
@@ -48,17 +49,17 @@ function signal = gen_signal(varargin)
 %
 %   Examples
 %
-%       SIGNAL = GEN_SIGNAL(@(t) sin(t) + 0.5*sin(3*t), 2*pi)
-%       SIGNAL = GEN_SIGNAL(@(t) interp1([0 2 4  5  7 9], ...
+%       signal = GEN_SIGNAL(@(t) sin(t) + 0.5*sin(3*t), 2*pi)
+%       signal = GEN_SIGNAL(@(t) interp1([0 2 4  5  7 9], ...
 %                                        [0 1 3 -3 -1 0], ...
 %                                        mod(t, 9), ...
 %                                        'pchip'), ...
 %                           9)
 %
-%       SIGNAL = GEN_SIGNAL([1 2 3 4 5 6], [1 2 1 -2 -1 -1])
-%       SIGNAL = GEN_SIGNAL([0 1 2 3 3+eps 7], [0 2 1 2 -1 -1], 'linear')
+%       signal = GEN_SIGNAL([1 2 3 4 5 6], [1 2 1 -2 -1 -1])
+%       signal = GEN_SIGNAL([0 1 2 3 3+eps 7], [0 2 1 2 -1 -1], 'linear')
 %
-%   See also HYBRIDSET, HYBRID, SIM_OPERATION, PLOT_HYBRID.
+% See also HYBRIDSET, HYBRID, SIM_OPERATION, PLOT_HYBRID.
 
 [sigtype, opt, in1, in2] = parse_gen_signal_input(varargin{:});
 

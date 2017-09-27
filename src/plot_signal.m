@@ -1,10 +1,10 @@
 function hfig = plot_signal(signal, opt, ax)
-% PLOT_SIGNAL plots a storage signal struct
+% PLOT_SIGNAL plots a signal struct
 %
-% HFIG = PLOT_SIGNAL(SIGNAL, <OPT>) Plots the signal provided as
-% a SIGNAL struct through GEN_SIGNAL using the options OPT. OPT is an
-% option structure provided through HYBRIDSET. HFIG is the handle to the
-% figure the result is plotted in.
+%   HFIG = PLOT_SIGNAL(SIGNAL, <OPT>) Plots the signal provided as a SIGNAL
+%   struct through GEN_SIGNAL using the options OPT. OPT is an option
+%   structure provided through HYBRIDSET. HFIG is the handle to the figure
+%   the result is plotted in.
 %
 % See also GEN_SIGNAL, HYBRIDSET.
 
