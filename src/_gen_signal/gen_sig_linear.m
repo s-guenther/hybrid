@@ -1,4 +1,4 @@
-function signal = gen_sig_linear(time, val, opt) %#ok
+function signal = gen_sig_linear(time, val, opt)
 % GEN_SIG_LINEAR specialized fcn of gen_signal for fhandles
 %
 % Generates SIGNAL struct for piecewise linear function input.
@@ -22,7 +22,8 @@ signal.time = tt;
 signal.val = xx;
 signal.period = tt(end);
 signal.amplitude = max(abs(xx));
-signal.maxint = max(cumtrapz(tt, xx));
+signal.int = cumtrapz(tt, xx);
+signal.maxint = max(signal.int);
 
 signal.rms = root_mean_square(signal);
 signal.arv = average_rectified_value(signal);
@@ -36,7 +37,8 @@ end
 
 function rms = root_mean_square(signal)
     % RMS implementation for nonuniform step functions
-    % TODO is function correct?
+    % TODO is function correct? --> partly
+    % TODO function will fail if there are parts with slope of zero
     tt = signal.time;
     xx = signal.val;
     TT = signal.period;

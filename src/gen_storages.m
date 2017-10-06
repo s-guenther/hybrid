@@ -2,7 +2,7 @@ function storages = gen_storages(spec_powers, varargin)
 % GEN_STORAGES builds a storage structure for hybrid storage calculation
 %
 %   GEN_STORAGES takes a list of storages, in form of their specific powers
-%   and generates a storage struct array of the form
+%   and generates an array of structs of the form
 %
 %       storages
 %           .spec_power double, specific power of the storage

@@ -23,7 +23,6 @@ function sim_results = sim_operation_fhandle(signal, control, ...
 %   .state      fhandle, function of time, control state
 % This structure will be complemented by the parent function.
 %
-%
 % See also SIM_OPERATION, CONTROL_FACTORY, HYBRID_PAIR
 
 % Build ODE

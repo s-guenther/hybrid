@@ -17,7 +17,6 @@ signal.fcn = fcn;
 signal.period = period;
 
 % search maximum amplitude with fminbnd
-% TODO test if fminbnd is a good choice and produces valid results
 verbose(opt.verbose, 2, ...
         'Find maximum amplitude via fminbnd.')
 [~, minamp, foundmin] = fminbnd(fcn, 0, period, opt.optimset);
@@ -28,7 +27,8 @@ if ~foundmin || ~foundmax
     warning('HYBRID:sig:fminbnderr', ...
             'Unable to find amplitude of fcn via fminbnd.')
 end
-% Find maximum amplitude with sampling signal
+% Find maximum amplitude with sampling signal as fminbnd may only find
+% local maximum
 maxsample = max(abs(fcn(linspace(0, period, opt.ampl_sample))));
 signal.amplitude = max(maxsample, -min([minamp, maxamp]));
 
@@ -37,7 +37,8 @@ signal.amplitude = max(maxsample, -min([minamp, maxamp]));
 verbose(opt.verbose, 2, ...
         'Find max integral via ode integration.')
 odesol = opt.continuous_solver;
-[~, yout] = odesol(@(tt, xx) fcn(tt), [0 period], 0, opt.odeset);
+[t, yout] = odesol(@(tt, xx) fcn(tt), [0 period], 0, opt.odeset);
+signal.int = @(tt) interp1(t, yout, tt, opt.interint);
 signal.maxint = max(yout);
 
 verbose(opt.verbose, 2, ...

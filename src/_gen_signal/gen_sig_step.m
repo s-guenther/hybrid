@@ -17,7 +17,8 @@ signal.time = time;
 signal.val = val;
 signal.period = time(end);
 signal.amplitude = max(abs(val));
-signal.maxint = max(cumsum(diff([0; time]).*val));
+signal.int = cumsum(diff([0; time]).*val);
+signal.maxint = max(signal.int);
 
 signal.rms = root_mean_square(signal);
 signal.arv = average_rectified_value(signal);

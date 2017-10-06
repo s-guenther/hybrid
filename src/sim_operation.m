@@ -51,18 +51,33 @@ function sim_results = sim_operation(signal, cut, varargin)
 %     opt = hybridset('plot_sim', 42, 'tanh_sim', 1e2)
 %     sim_results = sim_operation(signal, 0.5, 'nointer', opt)
 %
-%   Both strategies generally need omniscient knowledge of the signal,
-%   obtained through information from the dimensioning process. Therefore,
-%   it cannot be applied to real problems without modification.
+%   WARNING: Depending on the complexity of the input signal and the odeset
+%   options, this calculation may take a considerate amount of time.
 %
-%   DEFERRED: simulation for signal types 'step' and 'linear'.
+%   DEFERRED: simulation for signal types 'step' and 'linear'. They will be
+%   converted into a signal of type 'fhandle' in advance.
 %
-%   See also GEN_SIGNAL, HYBRIDSET, HYBRID.
+% See also GEN_SIGNAL, HYBRIDSET, HYBRID.
 
 % TODO integrate optional dims argument, which can handle simulations with
 % dimensions that are not at a hybridisation line
 
+% TODO calculation for step and linear
+
+if cut < 0 || cut > 1
+    error('HYBRID:sim_operation:cut_not_in_range', ...
+          'Parameter ''cut'' must be between 0 and 1')
+end
+
 [strategy, opt] = parse_hybrid_pair_input(varargin{:});
+
+ 
+% Convert 'linear' and 'step' into 'fhandle'
+if strcmpi(signal.type, 'linear')
+    signal = linear_to_fhandle(signal, opt);
+elseif strcmpi(signal.type, 'step')
+    signal = step_to_fhandle(signal, opt);
+end
 
 verbose(opt.verbose, 1, 'Start simulation by dimensioning storages.')
 
@@ -99,7 +114,7 @@ sim_results.strategy = strategy;
 sim_results.bw_int = bw_int;
 
 if opt.plot_sim
-    plot_operation(sim_results, opt)
+    plot_operation(sim_results, opt);
 end
 
 end

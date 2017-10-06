@@ -1,13 +1,15 @@
 function hybdata = main(signal, opt)
 % MAIN is wrapped by HYBRID
 %
-% This function is only intended to be called by HYBRID.
+%   This function is only intended to be called by HYBRID.
 %
-% Type 'help hybrid' for more information.
+%   Type 'help hybrid' for more information.
 %
-% This kind of overloading is done to provide a project hierarchy which
-% both has a clear main function as well as the possibility to call the
-% main function by the projects name.
+%   This kind of overloading is done to provide a project hierarchy which
+%   both has a clear main function as well as the possibility to call the
+%   main function by the projects name.
+%
+% See also HYBRID.
 
 % TODO add option to add a point to an existing calculation/result (to
 % refine curve afterwards if some crucial points show missing)
