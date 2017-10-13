@@ -1,4 +1,4 @@
-function hybdata = main(signal, opt)
+function [hybdata, varargout] = main(signal, varargin)
 % MAIN is wrapped by HYBRID
 %
 %   This function is only intended to be called by HYBRID.
@@ -20,9 +20,7 @@ if nargin == 0
     return
 end
 
-if nargin < 2
-    opt = hybridset();
-end
+[storages, opt] = parse_hybrid_input(varargin{:});
 
 % Calculate the hybrid storage dimensions for each power cut
 % In the first case: with allowed inter-storage flow, 
@@ -71,8 +69,24 @@ hybdata.hybrid_potential = hybrid_potential(hybrid);
 hybdata.reload_potential = hybdata.hybrid_potential - ...
                            hybrid_potential(nointer);
 
+% If storages where passed, calculate ecodata
+verbose(opt.verbose, 1, ...
+        'Generate ecodata.')
+if isvalidstorage(storages)
+    optmod = opt;
+    optmod.plot_eco = 0;
+    ecodata = eco(hybdata, storages, optmod);
+    varargout{1} = {ecodata};
+end
+
+% Plot output if specified by options, choose type depending on whether
+% ecodata is present or not
 if opt.plot_hyb
-    plot_hybrid(hybdata, signal, opt);
+    if isvalidstorage(storages)
+        plot_hybrid(hybdata, ecodata, signal, opt);
+    else
+        plot_hybrid(hybdata, signal, opt)
+    end
 end
 
 end

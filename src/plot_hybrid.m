@@ -7,9 +7,18 @@ function hfig = plot_hybrid(hybdata, varargin)
 %   inset. OPT is an option structure provided through HYBRIDSET. HFIG is
 %   the figure number the result is plotted in.
 %
+%   HFIG = PLOT_HYBRID(HYBDATA, STORAGES, <SIGNAL>, <OPT>) additionally
+%   plots the storages STORAGES into the hybridisation diagram.
+%
+%   HFIG = PLOT_HYBRID(HYBDATA, ECODATA, <SIGNAL>, <OPT>) additionally
+%   plots the cost function of ECODATA right to the hybridisation diagram.
+%   It reconstructs the STORAGES from ECODATA and plots them into the
+%   hybridisation diagram. Plots corresponding tuples derived from ECODATA
+%   into the hybridisation diagram.
+%
 % See also HYBRID, GEN_SIGNAL, PLOT_SIGNAL, PLOT_ECO, HYBRIDSET.
 
-[signal, opt] = parse_plot_hybrid_input(varargin{:});
+[storages, ecodata, signal, opt] = parse_plot_hybrid_input(varargin{:});
 
 if ~opt.plot_hyb
     hfig = figure(101);
@@ -18,20 +27,33 @@ else
 end
 
 clf
-hold on
 
-ax = gca;
-axp = axes(hfig, 'Position', ax.Position, 'Color', 'None');
+% Generate two axes if ecodata is present, else just one
+if isvalideco(ecodata)
+    ax = subplot(1, 30, 1:19);
+    hold on, grid on
+    axeco = subplot(1, 30, 24:30);
+    hold on, grid on
+else
+    ax = gca;
+    hold on, grid on
+end
+
+% generate rotated peak coordinate system
+ax.Color = 'none';
+axp = axes(hfig, 'Position', ax.Position);
+uistack(ax, 'top')
 % Reverse backward axes
 axp.XDir = 'reverse';
 axp.YDir = 'reverse';
 axp.XAxisLocation = 'top';
 axp.YAxisLocation = 'right';
 
-cut = linspace(0, 1, 1e2);
+cut = linspace(0, 1, 1e3);
 inter = hybdata.hybrid;
 nointer = hybdata.nointer;
 
+% Plot hybridisation curve
 axis([ax, axp], [0, inter.baseenergy(1), 0, inter.basepower(1)])
 
 patch(ax, inter.baseenergy(cut), inter.basepower(cut), ...
@@ -53,14 +75,31 @@ text(ax, 0.1*inter.baseenergy(1), 0.4*inter.basepower(1), ...
       ['R = ' num2str(hybdata.reload_potential)]; ...
       ['P_s/E_s = ' num2str(inter.basepower(1)/inter.baseenergy(1))]});
 
-grid(ax, 'on')
+% if storage structure is present, plot storages into hybridisation curve
+if isvalidstorage(storages)
+    energypower = [inter.baseenergy(1) inter.basepower(1)];
+    plot_storages(storages, energypower, opt, ax);
+end
 
-if isvalidsignal(signal)
-    axsig = axes('Position', [0.22, 0.58, .25, .25]);
-    plot_signal(signal, opt, axsig);
+% if ecodata is present, plot ecodata
+if isvalideco(ecodata)
+    limits = get_min_limits(ecodata, 'cost', opt);
+    plot_eco_cost(ecodata, limits, axeco, opt);
+    plot_eco_tuple(ecodata, limits, ax, opt);
+    xlabel(axeco, 'Costs')
+    ylabel(axeco, 'Power Cut \chi')
 end
 
 
-hold off
+% if signal is present, generate signal axis and plot signal into it
+if isvalidsignal(signal)
+    if isvalideco(ecodata)
+        axsig = axes('Position', [0.22, 0.58, .16, .25]);
+    else
+        axsig = axes('Position', [0.22, 0.58, .25, .25]);
+    end
+    plot_signal(signal, opt, axsig);
+end
+
 
 end

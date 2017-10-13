@@ -20,6 +20,13 @@ end
 verbose(opt.verbose, 1, ...
         'Validating Signal.')
 
+% is signal a struct?
+if ~isstruct(signal)
+    valid = 0;
+    errmsg = 'Signal is no struct';
+    return
+end
+
 % Does have all fields in struct?
 commonfields = isfield(signal, ...
                        {'period', 'amplitude', 'maxint', 'rms', 'arv', ...

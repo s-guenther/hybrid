@@ -1,10 +1,12 @@
 function valid = ishybridset(opt)
-% ISHYBRIDSETSTRUCT tests if a struct is a hybridsetstruct
+% ISHYBRIDSET tests if a struct is a hybridset struct
 %
-% TODO add description
+% Checks if a structure is a hybrid structure
 
-% TODO implement
+% TODO add all parameters
 
-valid = isstruct(opt);
+names = {'cut', 'odeset', 'optimset', 'verbose', 'discrete_solver', ...
+         'continuous_solver'};
+valid = isstruct(opt) && all(isfield(opt, names));
 
 end

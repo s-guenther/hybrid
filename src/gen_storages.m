@@ -6,17 +6,17 @@ function storages = gen_storages(spec_powers, varargin)
 %
 %       storages
 %           .spec_power double, specific power of the storage
-%           .price      double, price of the storage
+%           .cost       double, cost of the storage
 %           .name       string, name of the storage
 %
 %   STORAGES = GEN_STORAGES(SPEC_POWERS, <OPT>) where SPEC_POWERS are the
 %   specific powers of the storages, OPT is an optional options struct
 %   which defaults to OPT = HYBRIDSET().
-%   STORAGES = GEN_STORAGES(SPEC_POWERS, <PRICES>, <NAMES>, <OPT>) where
-%   PRICES is an optionally provided vector of prices and NAMES an
+%   STORAGES = GEN_STORAGES(SPEC_POWERS, <COSTS>, <NAMES>, <OPT>) where
+%   COSTS is an optionally provided vector of costs and NAMES an
 %   optionally provided cell array of names
 %
-%   If PRICES is omitted, it will be proportional to the specific power and
+%   If COSTS is omitted, it will be proportional to the specific power and
 %   default to (1 + SPEC_POWERS).
 %   If NAMES is omitted, it will default to num2str(SPEC_POWERS).
 %
@@ -42,23 +42,23 @@ function storages = gen_storages(spec_powers, varargin)
 % See also HYBRIDSET, ECO, PLOT_STORAGES.
 
 % parse input
-[prices, names, opt] = parse_gen_storages_input(spec_powers, varargin{:});
+[costs, names, opt] = parse_gen_storages_input(spec_powers, varargin{:});
 
 % sort
 [spec_powers, ind] = sort(spec_powers);
-prices = prices(ind);
+costs = costs(ind);
 names = names(ind);
 
 % preallocate
 storages = repmat(struct('spec_power', 0, ...
-                         'price', 0, ...
+                         'cost', 0, ...
                          'name', ''), ...
                   length(spec_powers), 1);
 % fill
 for i = 1:length(spec_powers)
     storages(i).spec_power = spec_powers(i);
-    storages(i).price = prices(i);
-    storages(i).name = names(i);
+    storages(i).cost = costs(i);
+    storages(i).name = names{i};
 end
 
 if opt.plot_stor

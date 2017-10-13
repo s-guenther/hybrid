@@ -89,6 +89,8 @@ function options = hybridset(varargin)
 %     function handle, the discontinuities will be smoothed as a help for
 %     the ode integrator. This value defines which transition zone will be
 %     smoothed. Default 1e-3;
+%   cut_sample - Number of samples that will be used for the determination
+%     of the limits in plot_eco. Default is 1e5;
 %
 %   plot_sig - Plot Signal after generation. Must be a positive integer.
 %     Defines the figure in which the result will be plotted after
@@ -179,6 +181,9 @@ prsr.addParameter('ampl_sample', 1e5, @(x) x == int32(x));
 
 % Step smoothing for converting step signals into fhandle signals
 prsr.addParameter('smooth_step', 1e-3, @isnumeric)
+
+% Power cut sampling points
+prsr.addParameter('cut_sample', 1e5, @isnumeric)
 
 % Average mean value relative tolerance
 prsr.addParameter('amv_rel_tol', 1e-3, @isnumeric);
