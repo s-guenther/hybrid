@@ -78,6 +78,13 @@ xmin = min(minvals);
 [~, ind] = sort(edgecuts);
 edgevals = edgevals(ind);
 xmax = max(edgevals(2:end-1));
+% repair xmax if only one pair is plotted
+if isempty(xmax)
+    xmax = min(edgevals);
+    if abs(xmax - xmin) < 1e-6
+        xmax = 1.5*xmin;
+    end
+end
 ax.XLim = [xmin-0.1*(xmax-xmin), xmax+2*(xmax-xmin)];
 ax.YLim = [0, 1];
 axrel.XLim = [0, 1];

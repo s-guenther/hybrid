@@ -21,8 +21,13 @@ lim_power = lim_energy*spec_power;
 
 % separate base and peak storages
 ind = find([storages.spec_power] > spec_power, 1, 'first');
-peak = storages(ind:end);
-base = storages(1:ind-1);
+if ~isempty(ind)
+    peak = storages(ind:end);
+    base = storages(1:ind-1);
+else
+    base = storages;
+    peak = [];
+end
 
 % color definitions for storages
 basecolors = winter(length(base));

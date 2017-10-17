@@ -21,7 +21,7 @@ verbose(opt.verbose, 1, ...
         'Validating Signal.')
 
 % is signal a struct?
-if ~isstruct(signal)
+if ~(isstruct(signal) && isscalar(signal))
     valid = 0;
     errmsg = 'Signal is no struct';
     return
@@ -31,6 +31,12 @@ end
 commonfields = isfield(signal, ...
                        {'period', 'amplitude', 'maxint', 'rms', 'arv', ...
                         'form', 'crest', 'type'});
+
+if ~all(commonfields)
+    valid = 0;
+    errmsg = 'Not a valid signal structure';
+    return
+end
 
 switch lower(signal.type)
     case 'fhandle'
@@ -43,9 +49,9 @@ switch lower(signal.type)
                '''fhandle'', ''step'' or ''linear'''], sigtype)
 end
 
-if ~all([commonfields, specialfields])
+if ~all(specialfields)
     valid = 0;
-    errmsg = 'Signal struct is incomplete';
+    errmsg = 'Not a valid signal structure.';
     return
 end
 

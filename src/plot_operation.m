@@ -1,4 +1,4 @@
-function hfig = plot_operation(simdata, varargin)
+function hfig = plot_operation(simdata, opt)
 % PLOT_OPERATION plots the simulation results of the hybrid
 %
 %   HFIG = PLOT_OPERATION(SIMDATA, <OPT>) Plots the simulation results,
@@ -11,7 +11,9 @@ function hfig = plot_operation(simdata, varargin)
 % TODO add plotting functionality for 'step' and 'linear' as soon as
 % available
 
-[~, opt] = parse_plot_hybrid_input(varargin{:});
+if nargin < 2
+    opt = hybridset();
+end
 
 if ~opt.plot_sim
     hfig = figure(103);

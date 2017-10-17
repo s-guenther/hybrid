@@ -7,6 +7,6 @@ function valid = ishybridset(opt)
 
 names = {'cut', 'odeset', 'optimset', 'verbose', 'discrete_solver', ...
          'continuous_solver'};
-valid = isstruct(opt) && all(isfield(opt, names));
+valid = isscalar(opt) && isstruct(opt) && all(isfield(opt, names));
 
 end

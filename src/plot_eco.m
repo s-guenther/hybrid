@@ -1,16 +1,15 @@
 function hfig = plot_eco(ecodata, varargin)
 % PLOT_ECO plots cost and dimensions functions of storage pairs
 %
-%   HFIG = PLOT_ECO(ECODATA, <DTYPE>, <OPT>) where ECODATA ist obtained
+%   HFIG = PLOT_ECO(ECODATA, <OPT>) where ECODATA ist obtained
 %   from ECO() and OPT is an optional options struct obtained from
 %   HYBRIDSET().
 %
 % See also ECO, HYBRIDSET, PLOT_HYBRID.
 
+[dtype, opt] = parse_plot_eco(varargin{:});
+
 % parse options
-if nargin < 2
-    opt = hybridset();
-end
 if ~opt.plot_sig
     hfig = figure(102);
 else
@@ -30,7 +29,7 @@ ax2.YTickLabel = [];
 ax3.YTickLabel = [];
 
 % delegate plot calls to special functions
-limits = get_min_limits(ecodata, 'cost');
+limits = get_min_limits(ecodata, dtype);
 
 plot_eco_cost(ecodata, limits, ax1);
 plot_eco_energy(ecodata, limits, ax2);

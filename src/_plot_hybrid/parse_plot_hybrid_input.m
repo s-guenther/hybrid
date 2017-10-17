@@ -21,7 +21,7 @@ if nargin == 1
         ecodata = false;
         signal = varargin{1};
         opt = hybridset();
-    elseif isvalidstorages(varargin{1})
+    elseif isvalidstorage(varargin{1})
         storages = varargin{1};
         ecodata = false;
         signal = false;
@@ -41,22 +41,42 @@ if nargin == 2
     if isvalidstorage(varargin{1})
         storages = varargin{1};
         ecodata = false;
+        if isvalidsignal(varargin{2})
+            signal = varargin{2};
+            opt = hybridset();
+        elseif ishybridset(varargin{2})
+            signal = false;
+            opt = varargin{2};
+        else
+            error('HYBRID:plot_hybrid:invalid_input', ...
+                  '3rd argument must be a signal or options struct.')
+        end
     elseif isvalideco(varargin{1})
         ecodata = varargin{1};
         storages = reconstruct_storages(varargin{1});
+        if isvalidsignal(varargin{2})
+            signal = varargin{2};
+            opt = hybridset();
+        elseif ishybridset(varargin{2})
+            signal = false;
+            opt = varargin{2};
+        else
+            error('HYBRID:plot_hybrid:invalid_input', ...
+                  '3rd argument must be a signal or options struct.')
+        end
+    elseif isvalidsignal(varargin{1})
+        signal = varargin{1};
+        storages = false;
+        ecodata = false;
+        if ishybridset(varargin{2})
+            opt = varargin{2};
+        else
+            error('HYBRID:plot_hybrid:invalid_input', ...
+                  '3rd argument must be an options struct.')
+        end
     else
         error('HYBRID:plot_hybrid:invalid_input', ...
-              '2nd argument must be a storage or eco struct.')
-    end
-    if isvalidsignal(varargin{2})
-        signal = varargin{2};
-        opt = hybridset();
-    elseif ishybridset(varargin{2})
-        signal = false;
-        opt = varargin{2};
-    else
-        error('HYBRID:plot_hybrid:invalid_input', ...
-              '3rd argument must be a signal or options struct.')
+              '2nd argument must be a signal, storage or eco struct.')
     end
 end
 

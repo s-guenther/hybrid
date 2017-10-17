@@ -1,4 +1,4 @@
-function [hybdata, varargout] = main(signal, varargin)
+function [hybdata, ecodata] = main(signal, varargin)
 % MAIN is wrapped by HYBRID
 %
 %   This function is only intended to be called by HYBRID.
@@ -15,8 +15,13 @@ function [hybdata, varargout] = main(signal, varargin)
 % refine curve afterwards if some crucial points show missing)
 
 if nargin == 0
-    help hybrid;
-    hybdata = NaN;
+    disp(' ')
+    disp('Usage: hybdata = hybrid(signal, <opt>)')
+    disp('       [hybdata, ecodata] = hybrid(signal, storages, <opt>)')
+    disp(' ')
+    disp('For further information, type ''help hybrid''')
+    hybdata = false;
+    ecodata = false;
     return
 end
 
@@ -76,7 +81,8 @@ if isvalidstorage(storages)
     optmod = opt;
     optmod.plot_eco = 0;
     ecodata = eco(hybdata, storages, optmod);
-    varargout{1} = {ecodata};
+else
+    ecodata = false;
 end
 
 % Plot output if specified by options, choose type depending on whether
@@ -85,7 +91,7 @@ if opt.plot_hyb
     if isvalidstorage(storages)
         plot_hybrid(hybdata, ecodata, signal, opt);
     else
-        plot_hybrid(hybdata, signal, opt)
+        plot_hybrid(hybdata, signal, opt);
     end
 end
 

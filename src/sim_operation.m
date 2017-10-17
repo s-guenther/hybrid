@@ -55,7 +55,9 @@ function sim_results = sim_operation(signal, cut, varargin)
 %   options, this calculation may take a considerate amount of time.
 %
 %   DEFERRED: simulation for signal types 'step' and 'linear'. They will be
-%   converted into a signal of type 'fhandle' in advance.
+%   converted into a signal of type 'fhandle' in advance. An adaption of
+%   the 'continuous_solver' and 'odeset' parameters may be neccessary to
+%   run the simulation without errors.
 %
 % See also GEN_SIGNAL, HYBRIDSET, HYBRID.
 

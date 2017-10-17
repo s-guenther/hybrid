@@ -16,7 +16,7 @@ if nargin < 3
 end
 
 % TODO magic numbers that 1e-6 might be unstable
-cut = linspace(1e-6, 1 - 1e-6, opt.cut_sample)';
+cut = linspace(1e-3, 1 - 1e-3, opt.cut_sample)';
 costs = zeros(length(cut), numel(ecodata));
 
 % evaluate costs at points of cut

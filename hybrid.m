@@ -1,4 +1,4 @@
-function [out, varargout] = hybrid(varargin)
+function [hybdata, ecodata] = hybrid(varargin)
 % HYBRID calculates the data for the hybridisation diagram
 % 
 %   HYBRID is the main calculation routine of this toolbox. It analyses the
@@ -69,6 +69,6 @@ function [out, varargout] = hybrid(varargin)
 %
 % See also HYBRIDSET, ECO, GEN_SIGNAL, GEN_STORAGES, PLOT_HYBRID.
 
-[out, varargout] = main(varargin{:});
+[hybdata, ecodata] = main(varargin{:});
 
 end

@@ -6,6 +6,8 @@ function valid = isvalidhybrid(hybdata)
 % TODO implement validity check
 
 names = {'hybrid', 'nointer', 'hybrid_potential', 'reload_potential'};
-valid = isstruct(hybdata) && all(isfield(hybdata, names));
+valid = isscalar(hybdata) && ...
+        isstruct(hybdata) && ...
+        all(isfield(hybdata, names));
 
 end
