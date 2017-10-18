@@ -1,5 +1,6 @@
-- Tested and build with MATLAB R2016a @ ubuntu/linux
-- Expected to work with older versions of matlab and on windows, too
+- Tested and built with MATLAB R2016a @Linux/Ubuntu14.04trusty 
+- Should work with all versions which support the dot notation (`obj.attribute`)
+  for objects, prior versions which only support `get(obj, attribute)` will fail
 
 - add project folder to path: when project folder is root, run
   `path(path, genpath(cd))`
