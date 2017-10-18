@@ -7,10 +7,10 @@ toolbox. These are:
 ```matlab
     hybridset
     gen_signal
-    hybrid
-    sim_operation
     gen_storages
+    hybrid
     eco
+    sim_operation
 ```
 
 Except for the first one, they all come with a corresponding plotting
@@ -18,10 +18,10 @@ function:
 
 ```matlab
     plot_signal
-    plot_hybrid
-    plot_operation
     plot_storages
+    plot_hybrid
     plot_eco
+    plot_operation
 ```
 
 To get a full description, use the matlab help function:
@@ -29,6 +29,8 @@ To get a full description, use the matlab help function:
 ```matlab
     help <function_name>
 ```
+
+The program structure is illustrated in `$HYBRID/docs/program_structure.svg`.
 
 
 Setup
@@ -200,7 +202,7 @@ Please refer to the adequate help pages for further information.
 
 The script
 
-```
+```matlab
     minimal
 ```
 

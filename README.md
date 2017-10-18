@@ -29,8 +29,10 @@ Usage
 -----
 
 In Matlab, add folder `$HYBRID` to path. Execute `hybrid`.
-See `$HYBRID/sample/minimal.m` and others for a simple example.
-See `$HYBRID/docs/quickstart.md` and others for further information.
+See `$HYBRID/sample/minimal.m` for a simple example.
+See `$HYBRID/docs/quickstart.md` for further usage information.
+See `$HYBRID/docs/informal_introduction.md` for background information regarding
+the theory.
 
 
 License

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="13cm" height="6cm" viewBox="6 15 258 106" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="10" y1="70" x2="249" y2="70"/>
+    <polygon style="fill: #000000" points="249,72.5 259,70 249,67.5 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="249,72.5 259,70 249,67.5 "/>
+  </g>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #0072bd" points="10,70 40,30 70,70 100,30 160,110 190,70 220,110 250,70 "/>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="10" y1="120" x2="10" y2="31"/>
+    <polygon style="fill: #000000" points="12.5,31 10,21 7.5,31 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="12.5,31 10,21 7.5,31 "/>
+  </g>
+</svg>
