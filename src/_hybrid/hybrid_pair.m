@@ -5,14 +5,14 @@ function [base, peak, bw_int] = hybrid_pair(signal, cut, varargin)
 % minimal dimensions of the two storages needed to fulfil the requirements
 % of the signal.
 % 
-% [PEAK, BASE] = HYBRID_PAIR(SIGNAL, CUT, <OPT>) performs the calculation
+% [BASE, PEAK] = HYBRID_PAIR(SIGNAL, CUT, <OPT>) performs the calculation
 % for SIGNAL at a power cut CUT ([0..1]) , it uses the options OPT provided
 % by HYBRIDSET. SIGNAL must be generated through GEN_SIGNAL.
 %
 % Relevant parameters in OPT are 'odeset', 'discrete_solver',
 % 'continuous_solver'.
 %
-% [PEAK, BASE] = HYBRID_PAIR(SIGNAL, CUT, <STRATEGY>, <OPT>) uses the
+% [BASE, PEAK] = HYBRID_PAIR(SIGNAL, CUT, <STRATEGY>, <OPT>) uses the
 % strategy STRATEGY for calculation. Can be 'inter' or 'nointer', default
 % is 'inter'. The first case 'inter' allows an inter-storage power flow
 % between the peak and base storage, leading to smaller peak storage energy
