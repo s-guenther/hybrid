@@ -28,9 +28,9 @@ it to the Matlab path.
 Usage
 -----
 
-In Matlab, add folder `$HYBRID` to path. Execute `hybrid`.
-See `$HYBRID/sample/minimal.m` for a simple example.
-See `$HYBRID/docs/quickstart.md` for further usage information.
+In Matlab, add folder `$HYBRID` to path. Execute `hybrid`.\
+See `$HYBRID/sample/minimal.m` for a simple example.\
+See `$HYBRID/docs/quickstart.md` for further usage information.\
 See `$HYBRID/docs/informal_introduction.md` for background information regarding
 the theory.
 
@@ -59,15 +59,15 @@ appreciated.
 Author
 ------
 
-hybrid - Calculation Toolbox for Hybrid Energy Storage Systems
-Copyright (C) 2017
-Sebastian Günther
+hybrid - Calculation Toolbox for Hybrid Energy Storage Systems\
+Copyright (C) 2017\
+Sebastian Günther\
 sebastian.guenther@ifes.uni-hannover.de
 
-Institut für Elektrische Energiesysteme
+Institut für Elektrische Energiesysteme\
 Fachgebiet für Elektrische Energiespeichersysteme
 
-Institute of Electric Power Systems
+Institute of Electric Power Systems\
 Electric Energy Storage Systems Section
 
 https://www.ifes.uni-hannover.de/ees.html

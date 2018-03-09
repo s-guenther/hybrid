@@ -3,7 +3,7 @@ Informal Introduction
 
 This file informally discusses the background of the theory and explains how to
 read and interpret the results. For details and precise information, see the
-scientific documentation `scientific.md`
+scientific documentation [scientific.md](scientific.md).
 
 
 Setting
@@ -15,7 +15,7 @@ picture.
 
 ![Example Network](_informal_introduction/network.svg)
 
-An energy management system now calculates a storage profile $$P(t)$$ to achieve
+An energy management system now calculates a storage profile P(t) to achieve
 a goal like maximising solar coverage, domestic consumption, grid peak power
 limiting or others. For this theory, it is not of importance what goal is aimed
 or how the storage profile is determined. This must be subject a preceeding
@@ -27,16 +27,17 @@ like this:
 This will be the starting point for the following considerations.
 
 
-Motivation ----------
+Motivation
+----------
 
-In the previous figure, the maximum power $$P_s$$ and maximum energy $$E_s$$ are
+In the previous figure, the maximum power P_s and maximum energy E_s are
 indicated. Optimally, a storage would have exactly these power and energy
 capacities as this would be the minimum dimensions to fulfil the requirements of
-the signal. They can be plotted in an $$E-P$$-diagram:
+the signal. They can be plotted in an E-P-diagram:
 
 ![Storage in E-P plane](_informal_introduction/04_hybrid.svg)
 
-The storage has a specific power $$P_s/E_s$$ indicated as the violett diagonal
+The storage has a specific power P_s/E_s indicated as the violett diagonal
 line. It is unlikely, that a real available storage has exactly the demanded
 specific power. As shown in the following figure, it is either too low (green
 line) or too high (red line).
@@ -45,7 +46,7 @@ line) or too high (red line).
 lines](_informal_introduction/05_hybrid.svg)
 
 The minimal possible storage with the low green specific power would have the
-following dimensions, to match the power requirement $$P_s$$:
+following dimensions, to match the power requirement P_s:
 
 ![Storage in E-P plane, low specific power
 storage](_informal_introduction/06_hybrid.svg)
@@ -57,7 +58,7 @@ not be used:
 capacity](_informal_introduction/07_hybrid.svg)
 
 The same principle applies for the the storage with the high red specific power.
-It must match the energy requirement  $$E_s$$:
+It must match the energy requirement  E_s:
 
 ![Storage in E-P plane, high specific power
 storage](_informal_introduction/08_hybrid.svg)
@@ -85,7 +86,7 @@ elaborations for the high and low storage:
 lines](_informal_introduction/10_hybrid2.svg)
 
 Now, we perform a parallel translation of the red high specific power line in a
-way that it intersects the point $$(E_s, P_s)$$ of the original single storage.
+way that it intersects the point (E_s, P_s) of the original single storage.
 
 ![Parallel translation of high specific power
 line](_informal_introduction/11_hybrid2.svg)
@@ -143,7 +144,7 @@ peak storage and the coordinate systems consequently base coordinate system and
 peak coordinate system. The reason for the naming convention will become clear
 later. The advantage of the two coordinate system is that both storage
 dimensions can be easily read in their own coordinate system. At last, the
-Parameters $$H = 0,57$$ and $$R = 0,10$$ appear now in the figure. The first one
+Parameters H = 0,57 and R = 0,10 appear now in the figure. The first one
 is an integral formulation of the hybridisation potential. It is the normalized
 grey area. The latter one describes the additional gain in the hybridisation
 potential by allowing an inter-storage power flow.
@@ -198,7 +199,7 @@ pulse:
 
 ![Symmetric double triangle pulse](_informal_introduction/trisignal.svg)
 
-Now, we introduce a power cut $$\chi$$ which is a fraction of the peak power
+Now, we introduce a power cut chi which is a fraction of the peak power
 (absolute value), everything below this power cut is taken care of by the base
 storage, everything above by the peak storage. The original single single
 collapses into two separate signals - a base signal and a peak signal.
@@ -217,8 +218,8 @@ The power and energy capacities of both storages still add up to the original
 single storage, but what we gained now is a base storage with a lower specific
 power, and a peak storage with a higher specific power.
 
-Nobody says that we have to do the cut at $$\chi = 0.5$$, we can do it any other
-point, e.g. at $$\chi = 0.25$$ or $$\chi = 0.75$$
+Nobody says that we have to do the cut at chi = 0.5, we can do it any other
+point, e.g. at chi = 0.25 or chi = 0.75
 
 ![Power splitting at different power
 cuts](_informal_introduction/splitsignal_2.svg)
@@ -229,7 +230,7 @@ dimension of the single storage.
 ![Result in E-P-plane at different power
 cuts](_informal_introduction/hybridcutmultiple.svg)
 
-When we do this for all power cuts $$\chi \in [0,1]$$, we gain the
+When we do this for all power cuts chi in [0,1], we gain the
 characteristic hybridisation curve.
 
 ![1st Hybridisation curve for double triangle

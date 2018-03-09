@@ -2,5 +2,7 @@
 - Should work with all versions which support the dot notation (`obj.attribute`)
   for objects, prior versions which only support `get(obj, attribute)` will fail
 
-- add project folder to path: when project folder is root, run
-  `path(path, genpath(cd))`
+- add project folder to path:
+    - if project folder is root, run `path(path, genpath(cd))`
+    - if in another folder, run `path(path, '$PATHTOPROJECTFOLDER')`
+
