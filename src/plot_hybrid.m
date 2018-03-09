@@ -92,7 +92,7 @@ end
 
 
 % if signal is present, generate signal axis and plot signal into it
-if isvalidsignal(signal)
+if isvalidsignal(signal, opt)
     if isvalideco(ecodata)
         axsig = axes('Position', [0.22, 0.58, .16, .25]);
     else

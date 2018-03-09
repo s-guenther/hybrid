@@ -64,7 +64,7 @@ if nargin == 2
             error('HYBRID:plot_hybrid:invalid_input', ...
                   '3rd argument must be a signal or options struct.')
         end
-    elseif isvalidsignal(varargin{1})
+    elseif isvalidsignal(varargin{1}, varargin{2})
         signal = varargin{1};
         storages = false;
         ecodata = false;

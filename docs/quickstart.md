@@ -30,7 +30,10 @@ To get a full description, use the matlab help function:
     help <function_name>
 ```
 
-The program structure is illustrated in `$HYBRID/docs/program_structure.svg`.
+The program structure is illustrated in the following picture and will be
+furtherly detailed in this document.
+
+![Program Structure, green: toolbox functions, green: toolbox specific data structures, white: matlab datatypes like double or string, black arrows: in/output, grey dashed arrows: optional in/outputs](program_structure.svg)
 
 
 Setup
@@ -98,10 +101,11 @@ As an optional third argument, the `type` can be provided: `'step'` or
 Defaults for time series signals to `'step'`, for function handle signals
 it defaults to `'fhandle'`.
 
-The input data must satisfy the following conditions:
+**The input data must satisfy the following conditions:**
 - arithmetic mean must be zero
 - integral must be zero at beginning and end
 - integral must be larger than or equal to zero for all times
+
 
 The signals will be plotted by default at the end (when no options
 structure through `hybridset()` is provided).
@@ -209,3 +213,13 @@ The script
 is a ready to use and executable example which implements the functionality
 described in this quickstart guide (execute `path(path, genpath(cd))` in
 advance).
+
+
+I want to analyze my own data
+-----------------------------
+
+Depending on your data, the signal generation via `gen_signal` may fail as it
+might not be consistent with the assumptions stated in Section
+[Generating a Signal Structure](#generating-a-signal-structure). See
+[\$HYBRID/docs/prepare_input_data.md](prepare_input_data.md) for help regarding
+this topic.
