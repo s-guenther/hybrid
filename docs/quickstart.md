@@ -101,10 +101,10 @@ As an optional third argument, the `type` can be provided: `'step'` or
 Defaults for time series signals to `'step'`, for function handle signals
 it defaults to `'fhandle'`.
 
-**The input data must satisfy the following conditions:
+**The input data must satisfy the following conditions:**
 - arithmetic mean must be zero
 - integral must be zero at beginning and end
-- integral must be larger than or equal to zero for all times**
+- integral must be larger than or equal to zero for all times
 
 
 The signals will be plotted by default at the end (when no options
@@ -221,4 +221,5 @@ I want to analyze my own data
 Depending on your data, the signal generation via `gen_signal` may fail as it
 might not be consistent with the assumptions stated in Section
 [Generating a Signal Structure](#generating-a-signal-structure). See
-[prepare_input_data.md](prepare_input_data.md) for help regarding this topic.:w
+[\$HYBRID/docs/prepare_input_data.md](prepare_input_data.md) for help regarding
+this topic.

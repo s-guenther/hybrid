@@ -29,10 +29,12 @@ Usage
 -----
 
 In Matlab, add folder `$HYBRID` to path. Execute `hybrid`.\
-See `$HYBRID/sample/minimal.m` for a simple example.\
-See `$HYBRID/docs/quickstart.md` for further usage information.\
-See `$HYBRID/docs/informal_introduction.md` for background information regarding
-the theory.
+See [\$HYBRID/sample/minimal.md](sample/minimal.md) for a simple example.\
+See [\$HYBRID/docs/quickstart.md](docs/quickstart.md) for further usage information.\
+See [\$HYBRID/docs/informal_introduction.md](docs/informal_introduction.md) for
+background information regarding the theory.\
+See [\$HYBRID/docs/prepare_input_data.md](docs/prepare_input_data.md) if you have
+trouble feeding the toolbox with your data.
 
 
 License
@@ -49,11 +51,20 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-For details see the license file `$HYBRID/LICENSE`.
+For details see the license file [\$HYBRID/LICENSE](LICENSE).
 
 GPLv3 explicitely allows a commercial usage without any royalty or further
 implications. However, any contact to discuss possible cooperations is
 appreciated.
+
+
+Citing
+------
+
+If you use this toolbox for your derived works, please cite\
+_Günther, S., Bensmann, A., Hanke-Rauschenbach, R. (2018): Theoretical
+dimensioning and sizing limits of hybrid energy storage systems. Applied Energy
+210, 127. <http://dx.doi.org/10.1016/j.apenergy.2017.10.116>_
 
 
 Author

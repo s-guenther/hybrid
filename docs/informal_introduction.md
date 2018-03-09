@@ -3,7 +3,7 @@ Informal Introduction
 
 This file informally discusses the background of the theory and explains how to
 read and interpret the results. For details and precise information, see the
-scientific documentation [scientific.md](scientific.md).
+scientific documentation [#HYBRID/docs/scientific.md](scientific.md).
 
 
 Setting
