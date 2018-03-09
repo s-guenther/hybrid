@@ -22,8 +22,8 @@ If your data does not comply with the restrictions, the signal generation via
 calculation. There are a few options to make your data satisfy the conditions.
 
 
-1) My storages are not ideal and subject to losses
---------------------------------------------------
+My storages are not ideal and subject to losses
+-----------------------------------------------
 
 You can calculate an ideal storage profile from your storage profile subject to
 losses. Suppose your storage has an efficiency of eta=0.8 and a self discharge
@@ -68,8 +68,8 @@ one to read)
 The same principle can be be applied to other (nonlinear) storage models
 
 
-2) I only want to analyze my discharging phase and don't care about charging
-----------------------------------------------------------------------------
+I only want to analyze my discharging phase and don't care about charging
+-------------------------------------------------------------------------
 
 This can be achieved easily by prepending a charging to the data by point
 morroring the discharging phase. This ensures, that the virtual charging phase
@@ -84,8 +84,8 @@ if you are only interested in the charging phase or if you have a storage power
 profile with a complete charging cycle and an incomplete discharging cycle etc.
 
 
-3) My data does start and end with the same state of charge, but is not zero
-----------------------------------------------------------------------------
+My data does start and end with the same state of charge, but is not zero
+-------------------------------------------------------------------------
 
 If you believe that your storage has a complete charging and discharging phase,
 but your integral drops below zero in between, then your data does not start at
@@ -123,8 +123,8 @@ handle directly with:
 ```
 
 
-4) My data complies with the restrictions, but gen_signal fails nevertheless
-----------------------------------------------------------------------------
+My data complies with the restrictions, but gen_signal fails nevertheless
+-------------------------------------------------------------------------
 
 This may happen due to numerical errors. The error message should indicate the
 problem. Try tweaking the tolerances
