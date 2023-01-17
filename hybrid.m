@@ -31,7 +31,9 @@ function [hybdata, ecodata] = hybrid(varargin)
 %               .peakpower          fhandle, fcn of power cut in [0...1]
 %               .peakenergy         fhandle, fcn of power cut in [0...1]
 %           .hybrid_potential   Hybridisation Potential
-%           .reload_potential   Reload Potential
+%                               (value between 0 and 1)
+%           .reload_potential   Reload Potential(value between 0 and 1)
+%           .hybrid_skewness    Hybrid Skewness (value between -1 and 1)
 %
 %   ECODATA is an (m x n) array of structs, where m is the number of base
 %   storages and n the number of peak storages. Each struct element has the
