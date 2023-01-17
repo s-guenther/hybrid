@@ -73,6 +73,7 @@ hybdata.nointer = nointer;
 hybdata.hybrid_potential = hybrid_potential(hybrid);
 hybdata.reload_potential = hybdata.hybrid_potential - ...
                            hybrid_potential(nointer);
+hybdata.hybrid_skewness = hybrid_skewness(hybrid);
 
 % If storages where passed, calculate ecodata
 verbose(opt.verbose, 1, ...
